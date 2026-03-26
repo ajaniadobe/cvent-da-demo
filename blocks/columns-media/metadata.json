@@ -1,0 +1,39 @@
+{
+  "variantName": "columns-media",
+  "baseBlock": "columns",
+  "version": "1.0.0",
+  "created": "2026-03-25T22:40:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.cvent.com/",
+    "originPage": "Cvent homepage",
+    "blockPosition": "middle"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "mixed",
+    "density": "standard",
+    "purpose": "media-bar",
+    "imagePattern": "large"
+  },
+  "contentPattern": {
+    "structure": "image + heading + text + CTAs",
+    "buttonCount": 2,
+    "imageCount": 1
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "media bar sections with image and text side by side",
+      "feature highlight sections",
+      "CTA sections with screenshots"
+    ],
+    "notSuitableFor": [
+      "three-column layouts",
+      "text-only side-by-side content",
+      "card-like grid layouts"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-03-25T22:40:00.000Z"
+  }
+}

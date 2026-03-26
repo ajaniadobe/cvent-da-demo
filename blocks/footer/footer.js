@@ -1,7 +1,8 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-const FOOTER_PATH = '/fragments/nav/footer';
+const contentRoot = window.location.pathname.startsWith('/content') ? '/content' : '';
+const FOOTER_PATH = `${contentRoot}/fragments/nav/footer`;
 
 /**
  * loads and decorates the footer

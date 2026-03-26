@@ -1,0 +1,92 @@
+/* Cards News Block
+   Cvent news/resource cards: text-only cards in a grid,
+   label + title + meta + CTA, rounded corners, light border */
+
+.cards-news > ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.cards-news > ul > li {
+  background-color: var(--color-light);
+  border: 1px solid #e3e3e3;
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* label/overline (first card-body in each li) */
+.cards-news > ul > li > .cards-news-card-body:first-child {
+  font-size: var(--body-font-size-l);
+  color: var(--color-text);
+  letter-spacing: var(--body-letter-spacing);
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+/* title */
+.cards-news h4 {
+  font-size: var(--heading-font-size-m);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: var(--heading-line-height);
+  margin-bottom: 12px;
+}
+
+/* meta text (date, location, etc.) */
+.cards-news .cards-news-card-body {
+  font-size: var(--body-font-size-l);
+  color: var(--color-text);
+  line-height: var(--body-line-height);
+}
+
+/* CTA links */
+.cards-news a {
+  color: var(--color-link);
+  font-size: var(--body-font-size-l);
+  font-weight: var(--link-font-weight);
+}
+
+.cards-news a:hover,
+.cards-news a:focus {
+  color: var(--color-dark-blue);
+}
+
+/* last card-body with link acts as CTA area */
+.cards-news > ul > li > .cards-news-card-body:last-child {
+  margin-top: auto;
+}
+
+/* link list card (4th card with multiple link items) */
+.cards-news > ul > li:last-child > .cards-news-card-body {
+  margin-bottom: 12px;
+}
+
+.cards-news > ul > li:last-child > .cards-news-card-body:last-child {
+  margin-bottom: 0;
+}
+
+/* hover effect */
+.cards-news > ul > li:hover {
+  box-shadow: 0 4px 16px rgb(0 0 0 / 8%);
+  transition: box-shadow 0.3s ease;
+}
+
+/* tablet: 2 columns */
+@media (width >= 600px) {
+  .cards-news > ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* desktop: 4 columns */
+@media (width >= 900px) {
+  .cards-news > ul {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
