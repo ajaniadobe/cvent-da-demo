@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/",
+  "path": "index",
+  "timestamp": "2026-03-25T23:01:01.616Z",
+  "title": "Cvent | Event Platform for In-person, Virtual, and Hybrid Events & Webinars",
+  "template": "homepage",
+  "blocks": [
+    "hero-homepage",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "cards-product",
+    "cards-news"
+  ]
+}

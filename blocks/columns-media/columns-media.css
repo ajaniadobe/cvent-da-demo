@@ -1,0 +1,133 @@
+/* Columns Media Block
+   Cvent 2-column layout: image + text side by side,
+   vertically centered, responsive stacking on mobile */
+
+.columns-media > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+}
+
+.columns-media > div > div {
+  order: 1;
+}
+
+/* image column */
+.columns-media > div > .columns-media-img-col {
+  order: 0;
+}
+
+.columns-media > div > .columns-media-img-col img {
+  display: block;
+  border-radius: 12px;
+}
+
+/* text column styling */
+.columns-media h2 {
+  font-size: var(--heading-font-size-xl);
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.columns-media h3 {
+  font-size: var(--heading-font-size-l);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.columns-media p {
+  font-size: var(--body-font-size-l);
+  line-height: var(--body-line-height);
+  margin-bottom: 16px;
+}
+
+/* CTA links with arrow */
+.columns-media a {
+  color: var(--color-link);
+  font-size: var(--body-font-size-l);
+  font-weight: var(--link-font-weight);
+}
+
+.columns-media a:hover,
+.columns-media a:focus {
+  color: var(--color-dark-blue);
+}
+
+/* images */
+.columns-media img {
+  width: 100%;
+  height: auto;
+}
+
+/* lists inside columns */
+.columns-media ul {
+  padding-inline-start: 24px;
+  margin-bottom: 24px;
+}
+
+.columns-media li {
+  font-size: var(--body-font-size-l);
+  margin-block: 8px;
+}
+
+/* button links in columns */
+.columns-media a.btn {
+  margin-top: 8px;
+}
+
+/* desktop: side by side */
+@media (width >= 900px) {
+  .columns-media > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .columns-media > div > div {
+    flex: 1;
+    order: unset;
+  }
+
+  .columns-media > div > .columns-media-img-col {
+    order: unset;
+  }
+}
+
+/* section color overrides for dark/gradient sections */
+.dark-blue .columns-media h2,
+.dark-blue .columns-media h3,
+.dark-blue .columns-media p,
+.dark-blue .columns-media li {
+  color: var(--color-light);
+}
+
+.dark-blue .columns-media a:not(.btn) {
+  color: var(--color-light);
+}
+
+.dark-blue .columns-media a:not(.btn):hover,
+.dark-blue .columns-media a:not(.btn):focus {
+  color: var(--color-footer-text);
+}
+
+.blue-purple-gradient .columns-media h2,
+.blue-purple-gradient .columns-media h3,
+.blue-purple-gradient .columns-media p,
+.blue-purple-gradient .columns-media li {
+  color: var(--color-light);
+}
+
+.blue-purple-gradient .columns-media a:not(.btn) {
+  color: var(--color-light);
+}
+
+.blue-green-gradient .columns-media h2,
+.blue-green-gradient .columns-media h3,
+.blue-green-gradient .columns-media p,
+.blue-green-gradient .columns-media li {
+  color: var(--color-light);
+}
+
+.blue-green-gradient .columns-media a:not(.btn) {
+  color: var(--color-light);
+}

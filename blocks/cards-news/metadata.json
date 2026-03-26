@@ -1,0 +1,39 @@
+{
+  "variantName": "cards-news",
+  "baseBlock": "cards",
+  "version": "1.0.0",
+  "created": "2026-03-25T22:40:00.000Z",
+  "sourceContext": {
+    "originUrl": "https://www.cvent.com/",
+    "originPage": "Cvent homepage",
+    "blockPosition": "bottom"
+  },
+  "visualCharacteristics": {
+    "colorScheme": "light",
+    "density": "compact",
+    "purpose": "news-updates",
+    "imagePattern": "mixed"
+  },
+  "contentPattern": {
+    "structure": "category label + heading + description + date + CTA link",
+    "buttonCount": 1,
+    "imageCount": 0
+  },
+  "reuseGuidance": {
+    "suitableFor": [
+      "news and event listings",
+      "blog post summaries",
+      "announcement sections"
+    ],
+    "notSuitableFor": [
+      "product feature grids with icons",
+      "image-heavy card layouts",
+      "team member profiles"
+    ]
+  },
+  "usage": {
+    "pagesUsing": ["/index"],
+    "reuseCount": 1,
+    "lastUsed": "2026-03-25T22:40:00.000Z"
+  }
+}

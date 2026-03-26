@@ -3,8 +3,9 @@ import { loadFragment } from '../fragment/fragment.js';
 import { setColorScheme } from '../section-metadata/section-metadata.js';
 
 const { locale } = getConfig();
+const contentRoot = window.location.pathname.startsWith('/content') ? '/content' : '';
 
-const HEADER_PATH = '/fragments/nav/header';
+const HEADER_PATH = `${contentRoot}/fragments/nav/header`;
 const HEADER_ACTIONS = [
   '/tools/widgets/scheme',
   '/tools/widgets/language',
