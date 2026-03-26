@@ -14,6 +14,10 @@ header {
   background-color: var(--color-light);
   border-bottom: 1px solid var(--color-light-grey);
 
+  .section {
+    padding: 0;
+  }
+
   ul {
     margin: 0;
     padding: 0;
@@ -145,15 +149,15 @@ header {
         }
 
         svg {
-          width: var(--logo-width);
-          height: var(--logo-height);
+          display: none;
         }
 
         .brand-text {
           display: block;
-          width: 0;
-          height: 0;
-          overflow: hidden;
+          font-size: 28px;
+          font-weight: 900;
+          letter-spacing: -0.5px;
+          color: var(--color-dark-blue);
         }
       }
     }
