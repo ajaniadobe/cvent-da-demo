@@ -477,36 +477,6 @@ svg {
   height: 20px;
 }
 
-/* logo wall: paragraphs with only an image child displayed as horizontal row */
-.default-content > h2 + p:has(> img:only-child) {
-  display: inline-block;
-  width: auto;
-  margin: 12px 16px;
-  vertical-align: middle;
-}
-
-.default-content > p:has(> img:only-child) + p:has(> img:only-child) {
-  display: inline-block;
-  width: auto;
-  margin: 12px 16px;
-  vertical-align: middle;
-}
-
-.default-content > h2 + p:has(> img:only-child) img,
-.default-content > p:has(> img:only-child) + p:has(> img:only-child) img {
-  width: auto;
-  max-width: 140px;
-  max-height: 48px;
-  object-fit: contain;
-  opacity: 0.7;
-  filter: grayscale(100%);
-  transition: opacity 0.3s, filter 0.3s;
-}
-
-.default-content > p:has(> img:only-child) img:hover {
-  opacity: 1;
-  filter: grayscale(0%);
-}
 
 /* container breakpoint */
 @media (width >= 1440px) {
