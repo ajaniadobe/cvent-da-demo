@@ -164,6 +164,7 @@
 .lw-flyout-item {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 /* Flyout buttons — pill-shaped with phase-color gradients */
@@ -180,14 +181,35 @@
   color: #fff;
   white-space: nowrap;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  z-index: 1;
+  transition: filter 0.2s, box-shadow 0.2s;
 }
 
 .lw-flyout-btn:hover,
 .lw-flyout-btn:focus {
-  transform: translateY(-1px);
   box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
   color: #fff;
+}
+
+/* Active button is slightly darker */
+.lw-flyout-item.is-open .lw-flyout-btn {
+  filter: brightness(0.92);
+}
+
+/* Speech bubble triangle pointer below the expanded button */
+.lw-flyout-item.is-open .lw-flyout-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid currentcolor;
+  opacity: 0.5;
 }
 
 .lw-chevron {
@@ -201,38 +223,40 @@
   transform: rotate(180deg);
 }
 
-/* Expanded detail panel */
+/* Expanded detail panel — bordered card */
 .lw-flyout-detail {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: max-height 0.35s ease, opacity 0.3s, padding 0.3s;
-  padding: 0 16px;
-  background: rgb(255 255 255 / 80%);
-  border-radius: 0 0 16px 16px;
-  margin-top: -8px;
+  transition: max-height 0.35s ease, opacity 0.3s, padding 0.3s, margin 0.3s;
+  padding: 0 18px;
+  margin-top: 0;
+  background: #fff;
+  border: 1px solid #e0dfe6;
+  border-radius: 16px;
 }
 
 .lw-flyout-item.is-open .lw-flyout-detail {
-  max-height: 200px;
+  max-height: 260px;
   opacity: 1;
-  padding: 14px 16px 12px;
+  padding: 18px;
+  margin-top: 10px;
 }
 
 .lw-flyout-detail p {
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--color-text, #333);
-  margin: 0 0 8px;
+  margin: 0 0 14px;
 }
 
 .lw-explore-link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: #2ba6b0;
+  color: #c44040;
   text-decoration: none;
   float: right;
 }
@@ -241,21 +265,41 @@
   text-decoration: underline;
 }
 
-/* Phase-specific button gradient colors */
+/* Phase-specific button gradient colors + triangle pointer color */
 .lw-flyout-panel[data-phase="0"] .lw-flyout-btn {
   background: linear-gradient(135deg, #aab0f0, #8888d8);
+}
+
+.lw-flyout-panel[data-phase="0"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #8888d8;
+  opacity: 1;
 }
 
 .lw-flyout-panel[data-phase="1"] .lw-flyout-btn {
   background: linear-gradient(135deg, #b298e8, #8860cc);
 }
 
+.lw-flyout-panel[data-phase="1"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #8860cc;
+  opacity: 1;
+}
+
 .lw-flyout-panel[data-phase="2"] .lw-flyout-btn {
   background: linear-gradient(135deg, #68d4dc, #30b0b8);
 }
 
+.lw-flyout-panel[data-phase="2"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #30b0b8;
+  opacity: 1;
+}
+
 .lw-flyout-panel[data-phase="3"] .lw-flyout-btn {
   background: linear-gradient(135deg, #80e8cc, #48c8a8);
+}
+
+.lw-flyout-panel[data-phase="3"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #48c8a8;
+  opacity: 1;
 }
 
 /* -------------------------------------------------------

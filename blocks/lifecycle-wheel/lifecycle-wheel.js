@@ -113,30 +113,6 @@ export default function decorate(block) {
   `;
   wheelWrap.append(center);
 
-  // Feature descriptions keyed by feature name
-  const featureDesc = {
-    'Meeting approval & budgeting': 'Keep track of all the meetings and events happening at your organization with meeting request forms, streamlined approval workflows, and budget management tools.',
-    'Venue sourcing': 'Simplify your venue sourcing processes from start to finish, with access to 300,000+ venues.',
-    'Vendor sourcing': 'Browse and discover thousands of experienced service providers to accommodate your event.',
-    'Room block & travel': 'Streamline your room block management process and manage your preferred hotel program.',
-    'Venue diagramming': 'Collaborate with your team to bring your event to life with to-scale event diagrams, interactive floorplans, and photo-realistic 3D rendering.',
-    Registration: 'Create personalized registration experiences that capture the right attendee details and securely process payments.',
-    'Event website': 'Build branded event websites with an easy drag-and-drop site designer and drive people to register.',
-    Marketing: 'Send automated, personalized emails to engage your audience, boost response rates, and increase attendance.',
-    'Speaker management': 'Easily manage the call for speakers process and collaborate on event logistics with your speakers.',
-    'Exhibitor management': 'Streamline logistics and communications, eliminate back-and-forth coordination, and deliver exhibitor ROI.',
-    Networking: 'Help your attendees meet each other and connect with exhibitors, sponsors, and employees at your event.',
-    'Event app': 'Give your in-person and virtual attendees an easy way to network, get event updates and content, connect with sponsors, and more.',
-    'Onsite check-in & badging': 'Create a seamless onsite experience to quickly check attendees in, print their name badges, and track attendance.',
-    'Virtual experience': 'Create engaging virtual experiences that allow attendees to consume live and on-demand content, network with each other, meet with sponsors and exhibitors, and more.',
-    Webinar: 'Use intuitive production tools to create engaging webinars that will wow your attendees.',
-    Integrations: 'Integrate your event data from Cvent with your other business systems to quickly send leads to sales and marketing and get improved insights.',
-    'Event & attendee insights': 'Store your event data and calculate ROI, understand engagement, manage costs, and improve your event strategy.',
-    Surveys: 'Collect smart, timely attendee feedback to increase your events\u2019 success year after year.',
-    'Lead management': 'Use one lead retrieval tool to easily qualify leads to pass on to sales and marketing.',
-    'Engagement scoring': 'Track and score your attendees\u2019 journey through interactions and activities at your events.',
-  };
-
   // Flyout panel
   const flyout = document.createElement('div');
   flyout.className = 'lw-flyout';
@@ -151,30 +127,37 @@ export default function decorate(block) {
     panel.dataset.phase = i;
 
     if (phase.features) {
-      const links = phase.features.querySelectorAll('a');
-      links.forEach((link) => {
-        const item = document.createElement('div');
-        item.className = 'lw-flyout-item';
+      const paragraphs = [...phase.features.querySelectorAll('p')];
+      for (let j = 0; j < paragraphs.length; j += 1) {
+        const link = paragraphs[j].querySelector('a');
+        if (link) {
+          // Next <p> without a link is the description
+          const nextP = paragraphs[j + 1];
+          const desc = (nextP && !nextP.querySelector('a')) ? nextP.textContent.trim() : '';
+          if (desc) j += 1; // skip the description paragraph
 
-        const btn = document.createElement('button');
-        btn.className = 'lw-flyout-btn';
-        btn.type = 'button';
-        btn.innerHTML = `<span>${link.textContent}</span><svg class="lw-chevron" viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+          const item = document.createElement('div');
+          item.className = 'lw-flyout-item';
 
-        const desc = featureDesc[link.textContent] || '';
-        const detail = document.createElement('div');
-        detail.className = 'lw-flyout-detail';
-        detail.innerHTML = `<p>${desc}</p><a href="${link.href}" class="lw-explore-link">Explore <svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`;
+          const btn = document.createElement('button');
+          btn.className = 'lw-flyout-btn';
+          btn.type = 'button';
+          btn.innerHTML = `<span>${link.textContent}</span><svg class="lw-chevron" viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-        btn.addEventListener('click', () => {
-          const isOpen = item.classList.contains('is-open');
-          panel.querySelectorAll('.lw-flyout-item.is-open').forEach((el) => el.classList.remove('is-open'));
-          if (!isOpen) item.classList.add('is-open');
-        });
+          const detail = document.createElement('div');
+          detail.className = 'lw-flyout-detail';
+          detail.innerHTML = `<p>${desc}</p><a href="${link.href}" class="lw-explore-link">Explore <svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`;
 
-        item.append(btn, detail);
-        panel.append(item);
-      });
+          btn.addEventListener('click', () => {
+            const isOpen = item.classList.contains('is-open');
+            panel.querySelectorAll('.lw-flyout-item.is-open').forEach((el) => el.classList.remove('is-open'));
+            if (!isOpen) item.classList.add('is-open');
+          });
+
+          item.append(btn, detail);
+          panel.append(item);
+        }
+      }
     }
     flyoutCard.append(panel);
   });
