@@ -1,5 +1,5 @@
 /* Logo Wall Block
-   Horizontal row of partner/client logos with grayscale treatment.
+   Horizontal row of partner/client logos, full color.
    Row 1: heading, Row 2: logos */
 
 .logo-wall-container {
@@ -20,12 +20,12 @@
 
 /* Row 1: heading */
 .logo-wall-heading {
-  margin-bottom: 32px;
+  margin-bottom: 48px;
 }
 
 .logo-wall-heading h2 {
   font-size: var(--heading-font-size-l);
-  font-weight: 700;
+  font-weight: 900;
   margin-bottom: 0;
 }
 
@@ -35,36 +35,23 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 20px 28px;
+  gap: 0;
 }
 
 .logo-wall-logos p {
-  margin: 0;
+  margin: 10px;
   line-height: 0;
 }
 
 .logo-wall-logos img {
-  width: auto;
-  max-width: 130px;
-  max-height: 48px;
+  width: 170px;
+  height: 170px;
+  max-width: 170px;
   object-fit: contain;
-  opacity: 0.7;
-  filter: grayscale(100%);
-  transition: opacity 0.3s, filter 0.3s;
-}
-
-.logo-wall-logos img:hover {
-  opacity: 1;
-  filter: grayscale(0%);
 }
 
 @media (width >= 900px) {
-  .logo-wall-logos > div {
-    gap: 24px 40px;
-  }
-
-  .logo-wall-logos img {
-    max-width: 150px;
-    max-height: 56px;
+  .logo-wall-heading h2 {
+    font-size: 48px;
   }
 }

@@ -152,6 +152,106 @@
       text-align: center;
     }
   }
+
+  /* Homepage variant: solid bg with image as content, not background */
+  &.homepage {
+    background: rgb(22 24 81);
+    border-radius: 24px;
+    margin: 0 24px;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+
+    .hero-background {
+      order: 2;
+
+      > div {
+        position: static;
+        background-color: transparent;
+      }
+
+      picture {
+        position: static;
+      }
+
+      img {
+        object-fit: contain;
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    .hero-foreground {
+      order: 1;
+      background: none;
+      min-height: auto;
+      padding: 48px 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: none;
+      margin: 0;
+
+      .fg-text {
+        width: 100%;
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 40px;
+        font-weight: 900;
+        font-style: italic;
+        line-height: 1.1;
+        margin: 0 0 16px;
+      }
+
+      p {
+        margin: 6px 0;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 24px;
+      }
+
+      li {
+        padding-left: 28px;
+        position: relative;
+        margin-bottom: 6px;
+      }
+
+      li::before {
+        content: '\2713';
+        position: absolute;
+        left: 0;
+        color: #fff;
+      }
+
+      /* CTA buttons */
+      p:last-child a:first-child {
+        display: inline-block;
+        background: #006ae1;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        margin-right: 16px;
+      }
+
+      p:last-child a:last-child {
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      p:last-child a:last-child::after {
+        content: ' \203A';
+        margin-left: 4px;
+      }
+    }
+  }
 }
 
 @media (width >= 600px) {
@@ -196,6 +296,34 @@
       &.hero-text-end {
         img {
           object-position: 100% 50%;
+        }
+      }
+    }
+
+    &.homepage {
+      display: grid;
+      grid-template-columns: 55% 45%;
+      align-items: center;
+
+      .hero-foreground {
+        padding: 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: none;
+        margin: 0;
+
+        h1 {
+          font-size: 56px;
+        }
+      }
+
+      .hero-background {
+        place-self: center end;
+
+        img {
+          max-width: 120%;
+          width: 120%;
         }
       }
     }

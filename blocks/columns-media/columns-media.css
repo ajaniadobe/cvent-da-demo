@@ -1,6 +1,7 @@
 /* Columns Media Block
    Cvent 2-column layout: image + text side by side,
-   vertically centered, responsive stacking on mobile */
+   vertically centered, responsive stacking on mobile.
+   Variants: blue-purple-gradient, blue-green-gradient, image-right */
 
 .columns-media > div {
   display: flex;
@@ -75,7 +76,9 @@
   margin-top: 8px;
 }
 
-/* desktop: side by side */
+/* -------------------------------------------------------
+   Desktop: side by side
+   ------------------------------------------------------- */
 @media (width >= 900px) {
   .columns-media > div {
     flex-direction: row;
@@ -93,7 +96,165 @@
   }
 }
 
-/* section color overrides for dark/gradient sections */
+/* -------------------------------------------------------
+   Variant: image-right — flip image to the right on desktop
+   ------------------------------------------------------- */
+@media (width >= 900px) {
+  .columns-media.image-right > div > .columns-media-img-col {
+    order: 2;
+  }
+
+  .columns-media.image-right > div > div:not(.columns-media-img-col) {
+    order: 1;
+  }
+}
+
+/* -------------------------------------------------------
+   Variant: blue-purple-gradient — block-level gradient card
+   (used for CventIQ, Demo CTA sections)
+   ------------------------------------------------------- */
+.columns-media.blue-purple-gradient {
+  background: var(--gradient-blue-purple);
+  border-radius: 24px;
+  padding: 48px 32px;
+  overflow: hidden;
+}
+
+.columns-media.blue-purple-gradient h2,
+.columns-media.blue-purple-gradient h3,
+.columns-media.blue-purple-gradient p,
+.columns-media.blue-purple-gradient li {
+  color: var(--color-light);
+}
+
+.columns-media.blue-purple-gradient a:not(.btn) {
+  color: var(--color-light);
+}
+
+.columns-media.blue-purple-gradient a:not(.btn):hover,
+.columns-media.blue-purple-gradient a:not(.btn):focus {
+  color: var(--color-footer-text);
+}
+
+/* Outline button for gradient variants */
+.columns-media.blue-purple-gradient .btn-outline-light {
+  background: transparent;
+  color: var(--color-light);
+  border: 2px solid var(--color-light);
+  border-radius: var(--button-border-radius);
+  padding: 12px 28px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.columns-media.blue-purple-gradient .btn-outline-light:hover,
+.columns-media.blue-purple-gradient .btn-outline-light:focus {
+  background: var(--color-light);
+  color: var(--color-dark-blue);
+}
+
+/* Secondary light button */
+.columns-media.blue-purple-gradient .btn-secondary-light {
+  background: transparent;
+  color: var(--color-light);
+  border: 2px solid rgb(255 255 255 / 60%);
+  border-radius: var(--button-border-radius);
+  padding: 12px 28px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.columns-media.blue-purple-gradient .btn-secondary-light:hover,
+.columns-media.blue-purple-gradient .btn-secondary-light:focus {
+  border-color: var(--color-light);
+  background: rgb(255 255 255 / 15%);
+}
+
+/* Image overlaps the gradient edge on desktop */
+@media (width >= 900px) {
+  .columns-media.blue-purple-gradient {
+    padding: 0 48px 0 0;
+  }
+
+  .columns-media.blue-purple-gradient > div > .columns-media-img-col img {
+    border-radius: 0;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .columns-media.blue-purple-gradient > div > div:not(.columns-media-img-col) {
+    padding: 48px 0;
+  }
+}
+
+/* -------------------------------------------------------
+   Variant: blue-green-gradient — block-level gradient card
+   (used for Venue sourcing section)
+   ------------------------------------------------------- */
+.columns-media.blue-green-gradient {
+  background: var(--gradient-blue-green);
+  border-radius: 24px;
+  padding: 48px 32px;
+  overflow: hidden;
+}
+
+.columns-media.blue-green-gradient h2,
+.columns-media.blue-green-gradient h3,
+.columns-media.blue-green-gradient p,
+.columns-media.blue-green-gradient li {
+  color: var(--color-light);
+}
+
+.columns-media.blue-green-gradient a:not(.btn) {
+  color: var(--color-light);
+}
+
+.columns-media.blue-green-gradient a:not(.btn):hover,
+.columns-media.blue-green-gradient a:not(.btn):focus {
+  color: var(--color-footer-text);
+}
+
+/* Outline button for gradient variants */
+.columns-media.blue-green-gradient .btn-outline-light {
+  background: transparent;
+  color: var(--color-light);
+  border: 2px solid var(--color-light);
+  border-radius: var(--button-border-radius);
+  padding: 12px 28px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.columns-media.blue-green-gradient .btn-outline-light:hover,
+.columns-media.blue-green-gradient .btn-outline-light:focus {
+  background: var(--color-light);
+  color: var(--color-dark-blue);
+}
+
+/* Image overlaps the gradient edge on desktop */
+@media (width >= 900px) {
+  .columns-media.blue-green-gradient {
+    padding: 0 0 0 48px;
+  }
+
+  .columns-media.blue-green-gradient > div > .columns-media-img-col img {
+    border-radius: 0;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .columns-media.blue-green-gradient > div > div:not(.columns-media-img-col) {
+    padding: 48px 0;
+  }
+}
+
+/* -------------------------------------------------------
+   Section color overrides for dark/gradient SECTIONS
+   (full-width section backgrounds, separate from block variants)
+   ------------------------------------------------------- */
 .dark-blue .columns-media h2,
 .dark-blue .columns-media h3,
 .dark-blue .columns-media p,
@@ -110,29 +271,31 @@
   color: var(--color-footer-text);
 }
 
-.blue-purple-gradient .columns-media h2,
-.blue-purple-gradient .columns-media h3,
-.blue-purple-gradient .columns-media p,
-.blue-purple-gradient .columns-media li {
+.blue-purple-gradient:not(.columns-media) .columns-media h2,
+.blue-purple-gradient:not(.columns-media) .columns-media h3,
+.blue-purple-gradient:not(.columns-media) .columns-media p,
+.blue-purple-gradient:not(.columns-media) .columns-media li {
   color: var(--color-light);
 }
 
-.blue-purple-gradient .columns-media a:not(.btn) {
+.blue-purple-gradient:not(.columns-media) .columns-media a:not(.btn) {
   color: var(--color-light);
 }
 
-.blue-green-gradient .columns-media h2,
-.blue-green-gradient .columns-media h3,
-.blue-green-gradient .columns-media p,
-.blue-green-gradient .columns-media li {
+.blue-green-gradient:not(.columns-media) .columns-media h2,
+.blue-green-gradient:not(.columns-media) .columns-media h3,
+.blue-green-gradient:not(.columns-media) .columns-media p,
+.blue-green-gradient:not(.columns-media) .columns-media li {
   color: var(--color-light);
 }
 
-.blue-green-gradient .columns-media a:not(.btn) {
+.blue-green-gradient:not(.columns-media) .columns-media a:not(.btn) {
   color: var(--color-light);
 }
 
-/* Single-column variant (e.g., bottom CTA) */
+/* -------------------------------------------------------
+   Single-column variant (e.g., bottom CTA)
+   ------------------------------------------------------- */
 .columns-media.columns-media-1-cols > div > div {
   max-width: 700px;
 }
