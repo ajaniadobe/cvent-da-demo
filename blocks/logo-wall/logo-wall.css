@@ -1,0 +1,57 @@
+/* Logo Wall Block
+   Horizontal row of partner/client logos, full color.
+   Row 1: heading, Row 2: logos */
+
+.logo-wall-container {
+  padding: 0;
+}
+
+.logo-wall-container .logo-wall-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
+.logo-wall {
+  text-align: center;
+  padding: var(--section-spacing) 15px;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+/* Row 1: heading */
+.logo-wall-heading {
+  margin-bottom: 48px;
+}
+
+.logo-wall-heading h2 {
+  font-size: var(--heading-font-size-l);
+  font-weight: 900;
+  margin-bottom: 0;
+}
+
+/* Row 2: logos — the cell (inner div) is the flex container */
+.logo-wall-logos > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+
+.logo-wall-logos p {
+  margin: 10px;
+  line-height: 0;
+}
+
+.logo-wall-logos img {
+  width: 170px;
+  height: 170px;
+  max-width: 170px;
+  object-fit: contain;
+}
+
+@media (width >= 900px) {
+  .logo-wall-heading h2 {
+    font-size: 48px;
+  }
+}
