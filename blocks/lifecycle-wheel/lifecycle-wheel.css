@@ -34,9 +34,10 @@
 /* Orbit dashed circle */
 .lw-orbit {
   fill: none;
-  stroke: #d0e0ea;
-  stroke-width: 1;
-  stroke-dasharray: 4 4;
+  stroke: #c8dce8;
+  stroke-width: 1.5;
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
 }
 
 /* Corner brackets */
@@ -49,20 +50,22 @@
 /* Donut arc segments */
 .lw-arc {
   cursor: pointer;
-  transition: opacity 0.4s, transform 0.4s;
-  transform-origin: 200px 200px;
+  stroke: transparent;
+  stroke-width: 3;
+  transition: opacity 0.4s, stroke 0.3s;
 }
 
 .lw-arc:hover {
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .lw-arc.is-active {
-  transform: scale(1.05);
+  stroke: #2ba6b0;
+  stroke-width: 3;
 }
 
 .lw-arc.is-dim {
-  opacity: 0.7;
+  opacity: 0.85;
 }
 
 /* White divider lines and center circle */
@@ -140,10 +143,11 @@
 }
 
 .lw-flyout-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 24px rgb(0 0 0 / 10%);
+  background: rgb(255 255 255 / 92%);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 6px 30px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(8px);
 }
 
 .lw-flyout-panel {
@@ -156,17 +160,26 @@
   display: flex;
 }
 
+/* Flyout accordion items */
+.lw-flyout-item {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Flyout buttons — pill-shaped with phase-color gradients */
 .lw-flyout-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 13px 20px;
-  border-radius: 28px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 32px;
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
   color: #fff;
+  white-space: nowrap;
+  cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -179,7 +192,53 @@
 
 .lw-chevron {
   flex-shrink: 0;
-  opacity: 0.8;
+  opacity: 0.7;
+  margin-left: 12px;
+  transition: transform 0.3s;
+}
+
+.lw-flyout-item.is-open .lw-chevron {
+  transform: rotate(180deg);
+}
+
+/* Expanded detail panel */
+.lw-flyout-detail {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s, padding 0.3s;
+  padding: 0 16px;
+  background: rgb(255 255 255 / 80%);
+  border-radius: 0 0 16px 16px;
+  margin-top: -8px;
+}
+
+.lw-flyout-item.is-open .lw-flyout-detail {
+  max-height: 200px;
+  opacity: 1;
+  padding: 14px 16px 12px;
+}
+
+.lw-flyout-detail p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text, #333);
+  margin: 0 0 8px;
+}
+
+.lw-explore-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2ba6b0;
+  text-decoration: none;
+  float: right;
+}
+
+.lw-explore-link:hover {
+  text-decoration: underline;
 }
 
 /* Phase-specific button gradient colors */
