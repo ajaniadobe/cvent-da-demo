@@ -296,6 +296,111 @@
 /* -------------------------------------------------------
    Single-column variant (e.g., bottom CTA)
    ------------------------------------------------------- */
-.columns-media.columns-media-1-cols > div > div {
+.columns-media.columns-media-1-cols:not(.social-proof) > div > div {
   max-width: 700px;
+}
+
+/* -------------------------------------------------------
+   Variant: social-proof — centered heading + side-by-side badges
+   ------------------------------------------------------- */
+.columns-media.social-proof {
+  text-align: center;
+}
+
+.columns-media.social-proof h2 {
+  font-size: var(--heading-font-size-xl);
+  margin-bottom: 32px;
+}
+
+.columns-media.social-proof > div:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.columns-media.social-proof > div:last-child > div {
+  flex: 0 1 auto;
+  max-width: 340px;
+}
+
+.columns-media.social-proof img {
+  max-height: 180px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* -------------------------------------------------------
+   Video play button overlay (Vidyard support)
+   ------------------------------------------------------- */
+.columns-media .video-link {
+  text-decoration: none;
+}
+
+.columns-media .video-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  background: rgb(0 0 0 / 55%);
+  border-radius: 50%;
+  z-index: 1;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.columns-media .video-play-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 54%;
+  transform: translate(-50%, -50%);
+  border-style: solid;
+  border-width: 12px 0 12px 22px;
+  border-color: transparent transparent transparent #fff;
+}
+
+.columns-media .video-link:hover .video-play-btn {
+  background: rgb(0 113 242 / 85%);
+}
+
+/* Lightbox modal */
+.video-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(0 0 0 / 80%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-lightbox-inner {
+  position: relative;
+  width: 90vw;
+  height: 50.6vw;
+  max-width: 960px;
+  max-height: 540px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video-lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+  z-index: 1;
+  line-height: 1;
 }

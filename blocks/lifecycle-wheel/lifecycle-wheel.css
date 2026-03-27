@@ -1,0 +1,373 @@
+/* Lifecycle Wheel Block
+   Circular donut wheel with 4 clickable phase quadrants,
+   curved SVG text labels, center content, and flyout feature panel.
+   Matches the Cvent homepage lifecycle wheel design. */
+
+.lifecycle-wheel {
+  text-align: center;
+}
+
+/* Layout: wheel + flyout side by side on desktop */
+.lw-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 320px;
+}
+
+/* -------------------------------------------------------
+   SVG Wheel
+   ------------------------------------------------------- */
+.lw-wheel-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 300px;
+  height: 300px;
+}
+
+.lw-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Orbit dashed circle */
+.lw-orbit {
+  fill: none;
+  stroke: #c8dce8;
+  stroke-width: 1.5;
+  stroke-dasharray: 2 6;
+  stroke-linecap: round;
+}
+
+/* Corner brackets */
+.lw-bracket {
+  fill: none;
+  stroke: #2ba6b0;
+  stroke-width: 2;
+}
+
+/* Donut arc segments */
+.lw-arc {
+  cursor: pointer;
+  stroke: transparent;
+  stroke-width: 3;
+  transition: opacity 0.4s, stroke 0.3s;
+}
+
+.lw-arc:hover {
+  opacity: 0.92;
+}
+
+.lw-arc.is-active {
+  stroke: #2ba6b0;
+  stroke-width: 3;
+}
+
+.lw-arc.is-dim {
+  opacity: 0.85;
+}
+
+/* White divider lines and center circle */
+.lw-divider {
+  stroke: var(--color-background, #fff);
+  stroke-width: 3;
+}
+
+.lw-center-bg {
+  fill: var(--color-background, #fff);
+}
+
+/* Curved text labels on arcs */
+.lw-arc-label {
+  fill: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  pointer-events: none;
+  font-family: var(--font-family, sans-serif);
+}
+
+/* -------------------------------------------------------
+   Center Content (HTML overlay)
+   ------------------------------------------------------- */
+.lw-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  width: 55%;
+  pointer-events: none;
+}
+
+.lw-logo {
+  font-size: 13px;
+  font-weight: 800;
+  color: #003b73;
+  font-style: italic;
+  margin-bottom: 2px;
+}
+
+.lw-phase-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--color-text);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+.lw-phase-tagline {
+  font-size: 11px;
+  color: var(--color-grey, #666);
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* -------------------------------------------------------
+   Flyout Panel
+   ------------------------------------------------------- */
+.lw-flyout {
+  width: 260px;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-12px);
+  visibility: hidden;
+  transition: opacity 0.35s, transform 0.35s, visibility 0.35s;
+}
+
+.lw-flyout.is-open {
+  opacity: 1;
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.lw-flyout-card {
+  background: rgb(255 255 255 / 92%);
+  border-radius: 20px;
+  padding: 14px;
+  box-shadow: 0 6px 30px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(8px);
+}
+
+.lw-flyout-panel {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lw-flyout-panel.is-active {
+  display: flex;
+}
+
+/* Flyout accordion items */
+.lw-flyout-item {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Flyout buttons — pill-shaped with phase-color gradients */
+.lw-flyout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 32px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+
+.lw-flyout-btn:hover,
+.lw-flyout-btn:focus {
+  box-shadow: 0 4px 14px rgb(0 0 0 / 18%);
+  color: #fff;
+}
+
+/* Active button is slightly darker */
+.lw-flyout-item.is-open .lw-flyout-btn {
+  filter: brightness(0.92);
+}
+
+/* Speech bubble triangle pointer below the expanded button */
+.lw-flyout-item.is-open .lw-flyout-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid currentcolor;
+  opacity: 0.5;
+}
+
+.lw-chevron {
+  flex-shrink: 0;
+  opacity: 0.7;
+  margin-left: 12px;
+  transition: transform 0.3s;
+}
+
+.lw-flyout-item.is-open .lw-chevron {
+  transform: rotate(180deg);
+}
+
+/* Expanded detail panel — bordered card */
+.lw-flyout-detail {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.3s, padding 0.3s, margin 0.3s;
+  padding: 0 18px;
+  margin-top: 0;
+  background: #fff;
+  border: 1px solid #e0dfe6;
+  border-radius: 16px;
+}
+
+.lw-flyout-item.is-open .lw-flyout-detail {
+  max-height: 260px;
+  opacity: 1;
+  padding: 18px;
+  margin-top: 10px;
+}
+
+.lw-flyout-detail p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-text, #333);
+  margin: 0 0 14px;
+}
+
+.lw-explore-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #c44040;
+  text-decoration: none;
+  float: right;
+}
+
+.lw-explore-link:hover {
+  text-decoration: underline;
+}
+
+/* Phase-specific button gradient colors + triangle pointer color */
+.lw-flyout-panel[data-phase="0"] .lw-flyout-btn {
+  background: linear-gradient(135deg, #aab0f0, #8888d8);
+}
+
+.lw-flyout-panel[data-phase="0"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #8888d8;
+  opacity: 1;
+}
+
+.lw-flyout-panel[data-phase="1"] .lw-flyout-btn {
+  background: linear-gradient(135deg, #b298e8, #8860cc);
+}
+
+.lw-flyout-panel[data-phase="1"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #8860cc;
+  opacity: 1;
+}
+
+.lw-flyout-panel[data-phase="2"] .lw-flyout-btn {
+  background: linear-gradient(135deg, #68d4dc, #30b0b8);
+}
+
+.lw-flyout-panel[data-phase="2"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #30b0b8;
+  opacity: 1;
+}
+
+.lw-flyout-panel[data-phase="3"] .lw-flyout-btn {
+  background: linear-gradient(135deg, #80e8cc, #48c8a8);
+}
+
+.lw-flyout-panel[data-phase="3"] .lw-flyout-item.is-open .lw-flyout-btn::after {
+  border-top-color: #48c8a8;
+  opacity: 1;
+}
+
+/* -------------------------------------------------------
+   Responsive
+   ------------------------------------------------------- */
+@media (width < 768px) {
+  .lw-layout {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .lw-wheel-wrap {
+    width: 260px;
+    height: 260px;
+  }
+
+  .lw-flyout {
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .lw-phase-title {
+    font-size: 15px;
+  }
+
+  .lw-phase-tagline {
+    font-size: 10px;
+  }
+
+  .lw-arc-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+}
+
+@media (width >= 900px) {
+  .lw-layout {
+    gap: 40px;
+    min-height: 420px;
+  }
+
+  .lw-wheel-wrap {
+    width: 380px;
+    height: 380px;
+  }
+
+  .lw-center {
+    width: 48%;
+  }
+
+  .lw-phase-title {
+    font-size: 22px;
+  }
+
+  .lw-phase-tagline {
+    font-size: 13px;
+  }
+
+  .lw-flyout {
+    width: 300px;
+  }
+
+  .lw-flyout-btn {
+    font-size: 15px;
+    padding: 14px 22px;
+  }
+
+  .lw-arc-label {
+    font-size: 14px;
+  }
+}
