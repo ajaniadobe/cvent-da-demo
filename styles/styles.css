@@ -18,8 +18,8 @@
   --spacing-m: 12px;
   --spacing-s: 8px;
   --spacing-xs: 4px;
-  --section-spacing: 80px;
-  --section-spacing-mobile: 48px;
+  --section-spacing: 48px;
+  --section-spacing-mobile: 32px;
 
   /* cvent brand colors */
   --color-dark-blue: #161851;
@@ -311,6 +311,16 @@ a {
     max-width: var(--content-max-width);
     margin: 0 auto;
     padding: 0 15px;
+  }
+
+  /* spacing between consecutive blocks within a section */
+  > .block-content > * + * {
+    margin-top: 96px;
+  }
+
+  /* no extra spacing before last block when it follows news cards */
+  > .block-content > .cards-news + * {
+    margin-top: 0;
   }
 }
 
