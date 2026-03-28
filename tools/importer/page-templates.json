@@ -570,7 +570,63 @@
         "https://www.cvent.com/en/cvent-news-and-press-releases"
       ],
       "description": "Resource listing and index pages including blog, case studies, webinars, and newsroom",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "cards-resource",
+          "instances": [
+            ".paragraph--type--summary-resources",
+            ".paragraph--type--reference-block.provider--views"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero Banner",
+          "selector": ".paragraph--type--header-banner-modern-form",
+          "style": "blue-purple-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".header-banner-modern-form h1",
+            ".header-banner-modern-form p",
+            ".header-banner-modern-form a.button-blue"
+          ]
+        },
+        {
+          "id": "section-2",
+          "name": "Featured Resources",
+          "selector": ".paragraph--type--summary-resources",
+          "style": null,
+          "blocks": [
+            "cards-resource"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3",
+          "name": "Resource Listing Grid",
+          "selector": ".paragraph--type--reference-block.provider--views",
+          "style": null,
+          "blocks": [
+            "cards-resource"
+          ],
+          "defaultContent": [
+            ".view-resources > h2"
+          ]
+        },
+        {
+          "id": "section-4",
+          "name": "Newsletter CTA",
+          "selector": ".paragraph--type--compound-form",
+          "style": "blue-purple-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".paragraph--type--simple-content h3",
+            ".paragraph--type--simple-content p",
+            ".paragraph--type--simple-image img"
+          ]
+        }
+      ]
     },
     {
       "name": "company-info",
@@ -582,7 +638,33 @@
         "https://www.cvent.com/en/security"
       ],
       "description": "Company information pages including about, leadership, awards, partners, and security",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar",
+            ".paragraph--type--header-banner-media"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero Banner",
+          "selector": ".paragraph--type--header-banner-media",
+          "style": null,
+          "blocks": ["columns-media"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Content Sections",
+          "selector": ".paragraph--type--compound-media-bar",
+          "style": null,
+          "blocks": ["columns-media"],
+          "defaultContent": []
+        }
+      ]
     },
     {
       "name": "contact-demo",
@@ -592,7 +674,21 @@
         "https://www.cvent.com/en/contact/support"
       ],
       "description": "Contact and demo request pages with forms for sales, support, and demo inquiries",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "hero-product-form",
+          "instances": [
+            ".paragraph--type--header-banner-modern-form .header-banner-modern-form"
+          ]
+        },
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar",
+            ".paragraph--type--header-banner-media"
+          ]
+        }
+      ]
     },
     {
       "name": "legal",
@@ -603,7 +699,15 @@
         "https://www.cvent.com/en/company/legal"
       ],
       "description": "Legal and compliance pages including privacy policy, terms of use, and legal notices",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--header-banner-media",
+            ".paragraph--type--compound-media-bar"
+          ]
+        }
+      ]
     },
     {
       "name": "training-certification",
@@ -612,7 +716,21 @@
         "https://www.cvent.com/en/cvent-certification"
       ],
       "description": "Training and certification pages for Cvent platform education and professional development",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "hero-product-form",
+          "instances": [
+            ".paragraph--type--header-banner-modern-form .header-banner-modern-form"
+          ]
+        },
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar",
+            ".paragraph--type--header-banner-media"
+          ]
+        }
+      ]
     },
     {
       "name": "resource-detail",
@@ -620,7 +738,15 @@
         "https://www.cvent.com/en/resource/platform/2026-meetings-and-events-trends"
       ],
       "description": "Individual resource detail page for downloadable content like eBooks and whitepapers",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar",
+            ".paragraph--type--header-banner-media"
+          ]
+        }
+      ]
     }
   ]
 }
