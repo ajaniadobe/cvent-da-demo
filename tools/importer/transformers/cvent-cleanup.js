@@ -10,6 +10,18 @@ const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'aft
 
 export default function transform(hookName, element, payload) {
   if (hookName === TransformHook.beforeTransform) {
+    // Remove the hidden "___" overlay anchor that appears at the top of every Cvent page
+    element.querySelectorAll('a').forEach((a) => {
+      if (a.textContent.trim() === '___' && a.getAttribute('href') === '#') {
+        const parent = a.closest('p') || a.parentElement;
+        if (parent && parent.textContent.trim() === '___') {
+          parent.remove();
+        } else {
+          a.remove();
+        }
+      }
+    });
+
     // Remove overlays and notification wrappers that may block parsing
     WebImporter.DOMUtils.remove(element, [
       '#block-exitoverlaysblock',
