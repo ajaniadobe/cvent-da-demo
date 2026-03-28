@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/supplier-venue",
+  "path": "en/supplier-venue",
+  "timestamp": "2026-03-28T12:45:20.600Z",
+  "title": "Supplier and Venue Management Solutions | Cvent",
+  "template": "supplier-venue",
+  "blocks": [
+    "hero-product-form",
+    "lifecycle-wheel",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "cards-resource",
+    "cards-feature"
+  ]
+}

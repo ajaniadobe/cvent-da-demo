@@ -1,0 +1,11 @@
+{
+  "baseBlock": "tabs",
+  "variantName": "tabs-integrations",
+  "description": "Vertical tabbed interface for integration partner logos by category",
+  "createdFrom": "https://www.cvent.com/en/event-management-software",
+  "visualCharacteristics": {
+    "layout": "vertical tabs with logo grid content",
+    "categories": "Sales & Marketing, Association Management, Budget & Expenses, Travel & Transportation, Web & Virtual, Networking, Data Analytics",
+    "content": "Each tab shows heading + partner logo grid with links"
+  }
+}
