@@ -526,6 +526,22 @@ svg {
   height: 20px;
 }
 
+/* logo wall — consecutive image-only paragraphs following an h2 in default content */
+.default-content > h2 ~ p:has(> picture:only-child),
+.default-content > h2 ~ p:has(> a:only-child img) {
+  display: inline-block;
+  margin: 8px 12px;
+  vertical-align: middle;
+}
+
+.default-content > h2 ~ p:has(> picture:only-child) img,
+.default-content > h2 ~ p:has(> a:only-child img) img {
+  max-width: 140px;
+  max-height: 56px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
 
 /* container breakpoint */
 @media (width >= 1440px) {
