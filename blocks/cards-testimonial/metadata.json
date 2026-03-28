@@ -1,0 +1,14 @@
+{
+  "variantName": "cards-testimonial",
+  "baseBlock": "cards",
+  "description": "Customer testimonial cards with company name, quote, and metrics",
+  "createdFor": "https://www.cvent.com/en/event-marketing-management/event-registration-software",
+  "usedOn": ["https://www.cvent.com/en/event-marketing-management/event-registration-software"],
+  "visualCharacteristics": {
+    "layout": "3-column grid",
+    "hasQuote": true,
+    "hasMetrics": true,
+    "hasImage": false,
+    "itemCount": 3
+  }
+}

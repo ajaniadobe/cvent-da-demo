@@ -158,6 +158,261 @@
           "defaultContent": []
         }
       ]
+    },
+    {
+      "name": "product-feature",
+      "urls": [
+        "https://www.cvent.com/en/event-marketing-management/event-registration-software",
+        "https://www.cvent.com/en/event-marketing-management/mobile-event-apps",
+        "https://www.cvent.com/en/event-marketing-management/webinar-platform",
+        "https://www.cvent.com/en/event-marketing-management/cvent-essentials",
+        "https://www.cvent.com/en/event-marketing-management/onarrival-event-check-in-software",
+        "https://www.cvent.com/en/event-marketing-management/cvent-supplier-network",
+        "https://www.cvent.com/en/event-marketing-management/accessibility"
+      ],
+      "description": "Product feature detail pages showcasing individual Cvent products and capabilities",
+      "blocks": [
+        {
+          "name": "hero-product-form",
+          "instances": [
+            ".paragraph--type--header-banner-modern-form .header-banner-modern-form"
+          ]
+        },
+        {
+          "name": "cards-feature",
+          "instances": [
+            ".paragraph--type--layout-content.column-count-3.bg-color-light-gray"
+          ]
+        },
+        {
+          "name": "cards-gallery",
+          "instances": [
+            ".paragraph--type--showcase-gallery"
+          ]
+        },
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar:not(.bg-color-gradient)",
+            ".paragraph--type--compound-content-bar"
+          ]
+        },
+        {
+          "name": "cards-testimonial",
+          "instances": [
+            ".paragraph--type--layout-content.column-count-3:not(.bg-color-light-gray)"
+          ]
+        },
+        {
+          "name": "columns",
+          "instances": [
+            ".paragraph--type--layout-content.column-count-2"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero with Form",
+          "selector": ".paragraph--type--header-banner-modern-form",
+          "style": null,
+          "blocks": [
+            "hero-product-form"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Features Grid",
+          "selector": ".paragraph--type--layout-content.column-count-3.bg-color-light-gray",
+          "style": "light-grey",
+          "blocks": [
+            "cards-feature"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2"
+          ]
+        },
+        {
+          "id": "section-3",
+          "name": "Brand Gallery",
+          "selector": ".paragraph--type--showcase-gallery",
+          "style": null,
+          "blocks": [
+            "cards-gallery"
+          ],
+          "defaultContent": [
+            ".showcase-gallery h2"
+          ]
+        },
+        {
+          "id": "section-4",
+          "name": "Feature Details",
+          "selector": ".paragraph--type--compound-media-bar:not(.bg-color-gradient)",
+          "style": null,
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2"
+          ]
+        },
+        {
+          "id": "section-5",
+          "name": "AI CTA",
+          "selector": ".paragraph--type--compound-media-bar.bg-color-gradient",
+          "style": "blue-purple-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".compound-media-bar__content h2",
+            ".compound-media-bar__content p",
+            ".compound-media-bar__content a"
+          ]
+        },
+        {
+          "id": "section-6",
+          "name": "Testimonials",
+          "selector": ".paragraph--type--layout-content.column-count-3:not(.bg-color-light-gray)",
+          "style": null,
+          "blocks": [
+            "cards-testimonial"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2"
+          ]
+        },
+        {
+          "id": "section-7",
+          "name": "CRM Integration",
+          "selector": ".paragraph--type--compound-media-bar:last-of-type",
+          "style": null,
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-8",
+          "name": "CTA with Form",
+          "selector": ".paragraph--type--compound-form",
+          "style": "blue-purple-gradient",
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-9",
+          "name": "Solutions Links",
+          "selector": ".paragraph--type--layout-content.column-count-2",
+          "style": null,
+          "blocks": [
+            "columns"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2"
+          ]
+        },
+        {
+          "id": "section-10",
+          "name": "Why Cvent",
+          "selector": ".paragraph--type--compound-content-bar",
+          "style": null,
+          "blocks": [],
+          "defaultContent": [
+            ".compound-content-bar h2",
+            ".compound-content-bar .stat-item"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "product-platform",
+      "urls": [
+        "https://www.cvent.com/en/event-management-software",
+        "https://www.cvent.com/en/event-management-software/cvent-integrations",
+        "https://www.cvent.com/en/event-management-software/cvent-pricing",
+        "https://www.cvent.com/en/products",
+        "https://www.cvent.com/en/event-types",
+        "https://www.cvent.com/en/cventiq"
+      ],
+      "description": "Product platform and overview pages including pricing, integrations, and product catalog",
+      "blocks": []
+    },
+    {
+      "name": "supplier-venue",
+      "urls": [
+        "https://www.cvent.com/en/supplier-venue",
+        "https://www.cvent.com/en/supplier-venue/group-marketing-solutions",
+        "https://www.cvent.com/en/supplier-venue/group-sales-solutions",
+        "https://www.cvent.com/en/supplier-venue/group-operations-solutions",
+        "https://www.cvent.com/en/supplier-venue/hotel-business-intelligence",
+        "https://www.cvent.com/en/supplier-venue/business-travel-solutions"
+      ],
+      "description": "Supplier and venue solution pages for hoteliers and venue operators",
+      "blocks": []
+    },
+    {
+      "name": "resource-listing",
+      "urls": [
+        "https://www.cvent.com/en/blog",
+        "https://www.cvent.com/en/case-studies",
+        "https://www.cvent.com/en/upcoming-webinars",
+        "https://www.cvent.com/en/resources",
+        "https://www.cvent.com/en/cvent-news-and-press-releases"
+      ],
+      "description": "Resource listing and index pages including blog, case studies, webinars, and newsroom",
+      "blocks": []
+    },
+    {
+      "name": "company-info",
+      "urls": [
+        "https://www.cvent.com/en/company",
+        "https://www.cvent.com/en/awards",
+        "https://www.cvent.com/en/management-team",
+        "https://www.cvent.com/en/become-partner",
+        "https://www.cvent.com/en/security"
+      ],
+      "description": "Company information pages including about, leadership, awards, partners, and security",
+      "blocks": []
+    },
+    {
+      "name": "contact-demo",
+      "urls": [
+        "https://www.cvent.com/en/request-demo",
+        "https://www.cvent.com/en/contact-us",
+        "https://www.cvent.com/en/contact/support"
+      ],
+      "description": "Contact and demo request pages with forms for sales, support, and demo inquiries",
+      "blocks": []
+    },
+    {
+      "name": "legal",
+      "urls": [
+        "https://www.cvent.com/en/privacy-policy",
+        "https://www.cvent.com/en/product-terms-of-use",
+        "https://www.cvent.com/en/website-terms-use",
+        "https://www.cvent.com/en/company/legal"
+      ],
+      "description": "Legal and compliance pages including privacy policy, terms of use, and legal notices",
+      "blocks": []
+    },
+    {
+      "name": "training-certification",
+      "urls": [
+        "https://www.cvent.com/en/academy",
+        "https://www.cvent.com/en/cvent-certification"
+      ],
+      "description": "Training and certification pages for Cvent platform education and professional development",
+      "blocks": []
+    },
+    {
+      "name": "resource-detail",
+      "urls": [
+        "https://www.cvent.com/en/resource/platform/2026-meetings-and-events-trends"
+      ],
+      "description": "Individual resource detail page for downloadable content like eBooks and whitepapers",
+      "blocks": []
     }
   ]
 }

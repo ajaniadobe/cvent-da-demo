@@ -1,0 +1,47 @@
+.hero-product-form-container .hero-product-form-wrapper {
+  max-width: unset;
+  padding: 0;
+}
+
+.hero-product-form {
+  position: relative;
+  padding: 40px 24px;
+  min-height: 300px;
+}
+
+.hero-product-form h1,
+.hero-product-form h2,
+.hero-product-form h3,
+.hero-product-form h4,
+.hero-product-form h5,
+.hero-product-form h6,
+.hero-product-form p {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--background-color);
+}
+
+.hero-product-form.no-image * {
+  color: var(--text-color);
+}
+
+.hero-product-form picture {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  object-fit: cover;
+  box-sizing: border-box;
+}
+
+.hero-product-form img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+@media (width >= 900px) {
+  .hero-product-form {
+    padding: 40px 32px;
+  }
+}

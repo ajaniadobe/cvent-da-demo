@@ -1,0 +1,14 @@
+{
+  "variantName": "cards-feature",
+  "baseBlock": "cards",
+  "description": "Feature icon cards - grid of items with icon and short label",
+  "createdFor": "https://www.cvent.com/en/event-marketing-management/event-registration-software",
+  "usedOn": ["https://www.cvent.com/en/event-marketing-management/event-registration-software"],
+  "visualCharacteristics": {
+    "layout": "3-column grid",
+    "hasIcon": true,
+    "hasTitle": true,
+    "hasDescription": false,
+    "itemCount": 6
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variantName": "hero-product-form",
+  "baseBlock": "hero",
+  "description": "Product feature hero with form sidebar for lead capture",
+  "createdFor": "https://www.cvent.com/en/event-marketing-management/event-registration-software",
+  "usedOn": ["https://www.cvent.com/en/event-marketing-management/event-registration-software"],
+  "visualCharacteristics": {
+    "layout": "two-column with content/video left and form right",
+    "hasForm": true,
+    "hasVideo": true,
+    "hasEyebrow": true
+  }
+}

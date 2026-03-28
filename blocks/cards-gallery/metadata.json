@@ -1,0 +1,14 @@
+{
+  "variantName": "cards-gallery",
+  "baseBlock": "cards",
+  "description": "Image gallery cards - grid of screenshot thumbnails",
+  "createdFor": "https://www.cvent.com/en/event-marketing-management/event-registration-software",
+  "usedOn": ["https://www.cvent.com/en/event-marketing-management/event-registration-software"],
+  "visualCharacteristics": {
+    "layout": "3-column grid",
+    "hasImage": true,
+    "hasTitle": false,
+    "hasDescription": false,
+    "itemCount": 6
+  }
+}

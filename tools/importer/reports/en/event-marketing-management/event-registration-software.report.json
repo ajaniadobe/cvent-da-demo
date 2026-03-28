@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/event-marketing-management/event-registration-software",
+  "path": "en/event-marketing-management/event-registration-software",
+  "timestamp": "2026-03-28T09:35:54.661Z",
+  "title": "Online Event Registration Software | Cvent",
+  "template": "product-feature",
+  "blocks": [
+    "hero-product-form",
+    "cards-feature",
+    "cards-feature",
+    "cards-gallery",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "cards-testimonial"
+  ]
+}
