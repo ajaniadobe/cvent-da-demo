@@ -247,20 +247,128 @@ var CustomImportScript = (() => {
         ".notifications-ajax-wrapper",
         "#skip-to-content"
       ]);
+      WebImporter.DOMUtils.remove(element, [
+        "#onetrust-consent-sdk",
+        "#onetrust-pc-sdk",
+        ".onetrust-pc-dark-filter",
+        '[class*="optanon"]',
+        '[id*="optanon"]'
+      ]);
+      element.querySelectorAll("img").forEach((img) => {
+        const src = img.getAttribute("src") || "";
+        if (src.includes("bat.bing.com") || src.includes("cdn.bizible.com") || src.includes("cdn.bizibly.com") || src.includes("googleadservices.com") || src.includes("googleads.g.doubleclick.net") || src.includes("cdn.cookielaw.org") || src.includes("facebook.com/tr") || src.includes("analytics.twitter.com") || src.includes("?") && img.getAttribute("alt") === "" && img.width <= 1) {
+          img.remove();
+        }
+      });
+      WebImporter.DOMUtils.remove(element, [
+        ".a2a_kit",
+        ".addtoany_share",
+        '[class*="addtoany"]'
+      ]);
+      element.querySelectorAll('button .inactive, button [hidden], [role="button"] .inactive').forEach((el) => {
+        el.remove();
+      });
+      element.querySelectorAll('button, [role="button"], .ui-dialog-titlebar-close').forEach((btn) => {
+        const text = btn.textContent.trim();
+        if (text === "Close" || text === "\xD7" || text === "\u2715" || text === "X") {
+          btn.remove();
+        }
+      });
+      element.querySelectorAll("div, span, p").forEach((el) => {
+        if (el.children.length === 0) {
+          const text = el.textContent.trim();
+          if (text === "Thanks for sharing!" || text === "\u2713" || text === "More\u2026") {
+            el.remove();
+          }
+        }
+      });
     }
     if (hookName === TransformHook.afterTransform) {
       WebImporter.DOMUtils.remove(element, [
         "header",
         "footer",
         "nav",
-        ".homepage-header-container",
         ".region-featured",
         ".region-header-top",
         ".region-header",
+        ".sticky-placeholer",
+        ".region-highlighted",
         "iframe",
         "link",
         "noscript"
       ]);
+      element.querySelectorAll("img, a").forEach((el) => {
+        const src = el.getAttribute("src") || el.getAttribute("href") || "";
+        if (src.includes("cookielaw.org") || src.includes("onetrust.com") || src.includes("cookiepedia.co.uk")) {
+          const parent = el.closest("p");
+          if (parent && parent.querySelectorAll("img, a").length <= 2) {
+            parent.remove();
+          } else {
+            el.remove();
+          }
+        }
+      });
+      const headings = element.querySelectorAll("h2, h3, h4");
+      headings.forEach((heading) => {
+        const text = heading.textContent.trim();
+        if (text === "Privacy Preference Center" || text === "Manage Consent Preferences" || text === "Cookie List" || text === "Functional Cookies" || text === "Targeting Cookies" || text === "Strictly Necessary Cookies" || text === "Performance Cookies") {
+          let sibling = heading.nextElementSibling;
+          while (sibling) {
+            const next = sibling.nextElementSibling;
+            const sibText = sibling.textContent.trim();
+            if ((sibling.tagName === "H2" || sibling.tagName === "H3") && sibText !== "Manage Consent Preferences" && sibText !== "Cookie List" && sibText !== "Functional Cookies" && sibText !== "Targeting Cookies" && sibText !== "Strictly Necessary Cookies" && sibText !== "Performance Cookies") {
+              break;
+            }
+            sibling.remove();
+            sibling = next;
+          }
+          heading.remove();
+        }
+      });
+      element.querySelectorAll("p").forEach((p) => {
+        const text = p.textContent.trim();
+        if (text === "Allow All" || text === "Reject All Confirm My Choices" || text === "Always Active" || text === "Apply Cancel" || text === "Consent Leg.Interest" || text === "Search\u2026" || text === "Clear" || text.match(/^\[[\sx]\] checkbox label/) || text.match(/^\[[\sx]\] (Functional|Targeting|Performance) Cookies$/)) {
+          p.remove();
+        }
+      });
+      element.querySelectorAll('img[alt=""]').forEach((img) => {
+        const src = img.getAttribute("src") || "";
+        if (src.includes("bat.bing.com") || src.includes("bizible.com") || src.includes("bizibly.com") || src.includes("googleadservices.com") || src.includes("cookielaw.org")) {
+          const parent = img.closest("p");
+          if (parent && parent.textContent.trim() === "") {
+            parent.remove();
+          } else {
+            img.remove();
+          }
+        }
+      });
+      element.querySelectorAll("p").forEach((p) => {
+        const text = p.textContent.trim();
+        if (text.endsWith("Close") && text.length > 5) {
+          const fixed = text.replace(/Close$/, "");
+          if (fixed !== text) {
+            p.textContent = fixed;
+          }
+        }
+      });
+      element.querySelectorAll("a").forEach((a) => {
+        const href = a.getAttribute("href") || "";
+        const text = a.textContent.trim();
+        if (href.includes("addtoany.com") || href === "#addtoany" || text === "AddToAny" || text === "More\u2026") {
+          const parent = a.closest("p");
+          if (parent && parent.querySelectorAll("a").length <= 1) {
+            parent.remove();
+          } else {
+            a.remove();
+          }
+        }
+      });
+      element.querySelectorAll("p").forEach((p) => {
+        const text = p.textContent.trim();
+        if (text === "Thanks for sharing!" || text === "\u2713") {
+          p.remove();
+        }
+      });
       element.querySelectorAll("*").forEach((el) => {
         el.removeAttribute("data-once");
         el.removeAttribute("data-drupal-selector");

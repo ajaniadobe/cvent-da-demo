@@ -38,6 +38,7 @@ export default function parse(element, { document }) {
   items.forEach((item) => {
     const icon = item.querySelector('.simple-icon-content__icon img');
     const label = item.querySelector('.simple-icon-content__content h3');
+    const description = item.querySelector('.simple-icon-content__content .field--name-field-description');
 
     const imageCell = [];
     const textCell = [];
@@ -48,6 +49,9 @@ export default function parse(element, { document }) {
 
     if (label) {
       textCell.push(label.cloneNode(true));
+    }
+    if (description) {
+      Array.from(description.children).forEach((child) => textCell.push(child.cloneNode(true)));
     }
 
     if (imageCell.length > 0 || textCell.length > 0) {
