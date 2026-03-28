@@ -337,7 +337,102 @@
         "https://www.cvent.com/en/cventiq"
       ],
       "description": "Product platform and overview pages including pricing, integrations, and product catalog",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "hero-product-form",
+          "instances": [
+            ".paragraph--type--header-banner-modern-form .header-banner-modern-form"
+          ]
+        },
+        {
+          "name": "tabs-integrations",
+          "instances": [
+            ".paragraph--type--layout-tabs-v"
+          ]
+        },
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar"
+          ]
+        },
+        {
+          "name": "cards-testimonial",
+          "instances": [
+            ".paragraph--type--layout-content.column-count-3"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero with Form",
+          "selector": ".paragraph--type--header-banner-modern-form",
+          "style": null,
+          "blocks": [
+            "hero-product-form"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Platform Tour",
+          "selector": ".paragraph--type--simple-content.alignment--center",
+          "style": null,
+          "blocks": [],
+          "defaultContent": [
+            ".paragraph--type--simple-content h2",
+            ".paragraph--type--simple-content img",
+            ".paragraph--type--simple-content a"
+          ]
+        },
+        {
+          "id": "section-3",
+          "name": "Free Trial CTA",
+          "selector": ".paragraph--type--banner-basic",
+          "style": "blue-purple-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".banner-basic h2",
+            ".banner-basic a"
+          ]
+        },
+        {
+          "id": "section-4",
+          "name": "Integrations Tabs",
+          "selector": ".paragraph--type--layout-tabs-v",
+          "style": null,
+          "blocks": [
+            "tabs-integrations"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2",
+            ".paragraph-header p"
+          ]
+        },
+        {
+          "id": "section-5",
+          "name": "Built for Any Event",
+          "selector": ".paragraph--type--compound-media-bar",
+          "style": null,
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-6",
+          "name": "Customer Testimonials",
+          "selector": ".paragraph--type--layout-content.column-count-3",
+          "style": "light-grey",
+          "blocks": [
+            "cards-testimonial"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2"
+          ]
+        }
+      ]
     },
     {
       "name": "supplier-venue",
@@ -350,7 +445,120 @@
         "https://www.cvent.com/en/supplier-venue/business-travel-solutions"
       ],
       "description": "Supplier and venue solution pages for hoteliers and venue operators",
-      "blocks": []
+      "blocks": [
+        {
+          "name": "hero-product-form",
+          "instances": [
+            ".paragraph--type--header-banner-modern-form .header-banner-modern-form"
+          ]
+        },
+        {
+          "name": "lifecycle-wheel",
+          "instances": [
+            ".paragraph--type--reference-block.cvent-main-wheel"
+          ]
+        },
+        {
+          "name": "columns-media",
+          "instances": [
+            ".paragraph--type--compound-media-bar"
+          ]
+        },
+        {
+          "name": "cards-resource",
+          "instances": [
+            ".paragraph--type--summary-resources"
+          ]
+        },
+        {
+          "name": "cards-feature",
+          "instances": [
+            ".paragraph--type--compound-content-bar"
+          ]
+        }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero with Form",
+          "selector": ".paragraph--type--header-banner-modern-form",
+          "style": "blue-green-gradient",
+          "blocks": [
+            "hero-product-form"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Group Business Wheel",
+          "selector": ".paragraph--type--reference-block.cvent-main-wheel",
+          "style": null,
+          "blocks": [
+            "lifecycle-wheel"
+          ],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3",
+          "name": "Feature Media Bars",
+          "selector": ".paragraph--type--compound-media-bar",
+          "style": null,
+          "blocks": [
+            "columns-media"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2",
+            ".paragraph-header .field--name-field-description p"
+          ]
+        },
+        {
+          "id": "section-4",
+          "name": "CVB/DMO CTA Banner",
+          "selector": ".paragraph--type--banner-basic:first-of-type",
+          "style": "blue-green-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".banner-basic h3",
+            ".banner-basic a"
+          ]
+        },
+        {
+          "id": "section-5",
+          "name": "Cvent CONNECT Banner",
+          "selector": ".paragraph--type--banner-basic:last-of-type",
+          "style": "blue-green-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".banner-basic h3",
+            ".banner-basic p",
+            ".banner-basic a"
+          ]
+        },
+        {
+          "id": "section-6",
+          "name": "Related Resources",
+          "selector": ".paragraph--type--summary-resources",
+          "style": null,
+          "blocks": [
+            "cards-resource"
+          ],
+          "defaultContent": [
+            ".paragraph-header h2"
+          ]
+        },
+        {
+          "id": "section-7",
+          "name": "Why Cvent Trust Bar",
+          "selector": ".trust-bar .paragraph--type--compound-content-bar",
+          "style": null,
+          "blocks": [
+            "cards-feature"
+          ],
+          "defaultContent": [
+            ".compound-content-bar .paragraph-header h2"
+          ]
+        }
+      ]
     },
     {
       "name": "resource-listing",

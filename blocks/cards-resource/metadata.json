@@ -1,0 +1,8 @@
+{
+  "name": "cards-resource",
+  "baseName": "cards",
+  "description": "Resource cards with image, category tag, title, and CTA link for 'You may also like' sections",
+  "created": "2026-03-28",
+  "source": "https://www.cvent.com/en/supplier-venue",
+  "usedIn": ["supplier-venue"]
+}

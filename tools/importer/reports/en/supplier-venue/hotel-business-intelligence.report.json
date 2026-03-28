@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/supplier-venue/hotel-business-intelligence",
+  "path": "en/supplier-venue/hotel-business-intelligence",
+  "timestamp": "2026-03-28T12:45:50.265Z",
+  "title": "Hotel Business Intelligence Software | Data-Driven Growth | Cvent",
+  "template": "supplier-venue",
+  "blocks": [
+    "hero-product-form",
+    "columns-media",
+    "columns-media",
+    "columns-media",
+    "cards-feature"
+  ]
+}
