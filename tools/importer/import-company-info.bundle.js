@@ -161,6 +161,16 @@ var CustomImportScript = (() => {
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
     if (hookName === TransformHook.beforeTransform) {
+      element.querySelectorAll("a").forEach((a) => {
+        if (a.textContent.trim() === "___" && a.getAttribute("href") === "#") {
+          const parent = a.closest("p") || a.parentElement;
+          if (parent && parent.textContent.trim() === "___") {
+            parent.remove();
+          } else {
+            a.remove();
+          }
+        }
+      });
       WebImporter.DOMUtils.remove(element, [
         "#block-exitoverlaysblock",
         ".exit-overlays-wrapper",
