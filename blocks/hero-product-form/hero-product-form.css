@@ -1,3 +1,7 @@
+/* Hero Product Form - Hero with background image, content left, form right */
+
+/* Used on product pages (EMS, integrations) and request-demo page */
+
 .hero-product-form-container .hero-product-form-wrapper {
   max-width: unset;
   padding: 0;
@@ -6,26 +10,13 @@
 .hero-product-form {
   position: relative;
   padding: 40px 24px;
-  min-height: 300px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-.hero-product-form h1,
-.hero-product-form h2,
-.hero-product-form h3,
-.hero-product-form h4,
-.hero-product-form h5,
-.hero-product-form h6,
-.hero-product-form p {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  color: var(--background-color);
-}
-
-.hero-product-form.no-image * {
-  color: var(--text-color);
-}
-
+/* Background image positioning */
 .hero-product-form picture {
   position: absolute;
   z-index: -1;
@@ -40,8 +31,104 @@
   height: 100%;
 }
 
+/* Text content */
+.hero-product-form h1 {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--background-color);
+  font-size: var(--body-font-size-m);
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.hero-product-form h2 {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--background-color);
+  font-size: var(--heading-font-size-l);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero-product-form h3,
+.hero-product-form h4,
+.hero-product-form h5,
+.hero-product-form h6 {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--background-color);
+}
+
+.hero-product-form p {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--background-color);
+  font-size: var(--body-font-size-m);
+  line-height: 1.6;
+}
+
+/* No-image variant */
+.hero-product-form.no-image * {
+  color: var(--text-color);
+}
+
+/* Form container (second row in the block) */
+.hero-product-form > div:last-child {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
 @media (width >= 900px) {
   .hero-product-form {
-    padding: 40px 32px;
+    padding: 60px 32px;
+    min-height: 500px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .hero-product-form > div:first-child {
+    flex: 1;
+    max-width: 55%;
+  }
+
+  .hero-product-form > div:last-child {
+    flex: 0 0 380px;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 24px rgb(0 0 0 / 15%);
+  }
+
+  .hero-product-form > div:last-child h3 {
+    color: var(--color-text);
+    font-size: var(--heading-font-size-s);
+    margin-bottom: 24px;
+  }
+
+  .hero-product-form h1 {
+    font-size: var(--body-font-size-l);
+  }
+
+  .hero-product-form h2 {
+    font-size: var(--heading-font-size-xl);
+  }
+}
+
+@media (width >= 1200px) {
+  .hero-product-form {
+    padding: 80px 48px;
+  }
+
+  .hero-product-form > div:last-child {
+    flex: 0 0 420px;
   }
 }

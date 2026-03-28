@@ -1,19 +1,28 @@
+/* Cards Resource - Resource library cards (blog posts, whitepapers, guides) */
+
+/* Used on resources page and supplier-venue hub for content links */
+
 .cards-resource > ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(257px, 1fr));
+  grid-template-columns: 1fr;
   gap: 24px;
 }
 
 .cards-resource > ul > li {
-  border: 1px solid #dadada;
+  border: 1px solid #e3e3e3;
+  border-radius: 20px;
   background-color: var(--background-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
-.cards-resource .cards-resource-card-body {
-  margin: 16px;
+.cards-resource > ul > li:hover {
+  box-shadow: var(--shadow-card-hover);
 }
 
 .cards-resource .cards-resource-card-image {
@@ -22,6 +31,55 @@
 
 .cards-resource > ul > li img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
+}
+
+.cards-resource .cards-resource-card-body {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-resource .cards-resource-card-body h4,
+.cards-resource .cards-resource-card-body h3 {
+  font-size: var(--heading-font-size-s);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 12px;
+}
+
+.cards-resource .cards-resource-card-body p {
+  font-size: var(--body-font-size-s);
+  color: var(--color-text);
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.cards-resource .cards-resource-card-body p:last-child {
+  margin-bottom: 0;
+  margin-top: auto;
+}
+
+.cards-resource .cards-resource-card-body a {
+  color: var(--color-link);
+  font-weight: var(--link-font-weight);
+  text-decoration: none;
+}
+
+.cards-resource .cards-resource-card-body a:hover {
+  text-decoration: underline;
+}
+
+@media (width >= 600px) {
+  .cards-resource > ul {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .cards-resource > ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
