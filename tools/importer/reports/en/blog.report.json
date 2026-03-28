@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/blog",
+  "path": "en/blog",
+  "timestamp": "2026-03-28T17:09:52.922Z",
+  "title": "Your Hub for Meetings, Hospitality, and Event Excellence | Cvent Blog",
+  "template": "resource-listing",
+  "blocks": [
+    "cards-resource",
+    "cards-resource",
+    "cards-resource",
+    "cards-resource",
+    "cards-resource"
+  ]
+}
