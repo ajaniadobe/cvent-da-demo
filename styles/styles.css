@@ -526,6 +526,11 @@ svg {
   height: 20px;
 }
 
+/* hide AEM breadcrumb placeholder ("___") injected by the CLI */
+main .section > .default-content > p:first-child:has(> a:only-child[href="/"]) {
+  display: none;
+}
+
 /* logo wall — consecutive image-only paragraphs following an h2 in default content */
 .default-content > h2 ~ p:has(> picture:only-child),
 .default-content > h2 ~ p:has(> a:only-child img) {
