@@ -63,7 +63,10 @@ export default function decorate(block) {
         const option = document.createElement('option');
         option.value = i === 0 ? '' : opt;
         option.textContent = opt;
-        if (i === 0) { option.disabled = true; option.selected = true; }
+        if (i === 0) {
+          option.disabled = true;
+          option.selected = true;
+        }
         select.append(option);
       });
       group.append(label, select);
@@ -88,7 +91,10 @@ export default function decorate(block) {
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
     window.location.href = '/en/request-demo';
   });
 
