@@ -533,6 +533,7 @@ main .section > .default-content > p:first-child:has(> a:only-child[href="/"]) {
 
 /* logo wall — consecutive image-only paragraphs following an h2 in default content */
 .default-content > h2 ~ p:has(> picture:only-child),
+.default-content > h2 ~ p:has(> img:only-child),
 .default-content > h2 ~ p:has(> a:only-child img) {
   display: inline-block;
   margin: 8px 12px;
@@ -540,6 +541,7 @@ main .section > .default-content > p:first-child:has(> a:only-child[href="/"]) {
 }
 
 .default-content > h2 ~ p:has(> picture:only-child) img,
+.default-content > h2 ~ p:has(> img:only-child) img,
 .default-content > h2 ~ p:has(> a:only-child img) img {
   max-width: 140px;
   max-height: 56px;
