@@ -178,6 +178,21 @@ async function decorateHeader(fragment) {
   for (const pattern of HEADER_ACTIONS) {
     decorateAction(fragment, pattern);
   }
+
+  // Create a hamburger nav toggle for mobile
+  const brandContent = sections[0]?.querySelector('.default-content');
+  if (brandContent) {
+    const navToggle = document.createElement('div');
+    navToggle.className = 'action-wrapper nav-toggle';
+    const navBtn = document.createElement('button');
+    navBtn.setAttribute('aria-label', 'Menu');
+    navBtn.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24">
+      <path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+    navToggle.append(navBtn);
+    decorateNavToggle(navBtn);
+    brandContent.append(navToggle);
+  }
 }
 
 /**

@@ -1,6 +1,25 @@
 export default function decorate(block) {
   const rows = [...block.children];
-  const phases = rows.map((row) => {
+
+  // First row with an empty/missing 3rd column is the center config row.
+  // Content model: | logo text | default title | default tagline |
+  // If omitted, sensible empty defaults are used.
+  let centerLogo = '';
+  let centerTitle = '';
+  let centerTagline = '';
+  let phaseRows = rows;
+
+  const firstCols = [...rows[0]?.children || []];
+  const hasConfigRow = firstCols.length < 3
+    || !firstCols[2]?.querySelector('a');
+  if (hasConfigRow && rows.length > 1) {
+    centerLogo = firstCols[0]?.textContent.trim() || '';
+    centerTitle = firstCols[1]?.textContent.trim() || '';
+    centerTagline = firstCols[2]?.textContent.trim() || '';
+    phaseRows = rows.slice(1);
+  }
+
+  const phases = phaseRows.map((row) => {
     const cols = [...row.children];
     return {
       name: cols[0]?.textContent.trim(),
@@ -10,9 +29,6 @@ export default function decorate(block) {
   });
 
   block.textContent = '';
-
-  // Phase colors for each quadrant
-  const colors = ['#8888d8', '#8860cc', '#30b0b8', '#48c8a8'];
 
   // SVG geometry
   const S = 400;
@@ -66,9 +82,9 @@ export default function decorate(block) {
   // Corner brackets
   brackets.forEach((d) => { svg += `<path d="${d}" class="lw-bracket" />`; });
 
-  // Donut arcs
+  // Donut arcs — colors now come from CSS custom properties
   quads.forEach(([s, e], i) => {
-    svg += `<path d="${donutArc(s, e)}" class="lw-arc lw-arc-${i}" data-phase="${i}" fill="${colors[i]}" />`;
+    svg += `<path d="${donutArc(s, e)}" class="lw-arc lw-arc-${i}" data-phase="${i}" />`;
   });
 
   // Divider lines between quadrants
@@ -106,11 +122,20 @@ export default function decorate(block) {
 
   const center = document.createElement('div');
   center.className = 'lw-center';
-  center.innerHTML = `
-    <div class="lw-logo">cvent</div>
-    <h3 class="lw-phase-title">Event lifecycle</h3>
-    <p class="lw-phase-tagline">Seamless event marketing and management, real results</p>
-  `;
+  if (centerLogo) {
+    const logoEl = document.createElement('div');
+    logoEl.className = 'lw-logo';
+    logoEl.textContent = centerLogo;
+    center.append(logoEl);
+  }
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'lw-phase-title';
+  titleEl.textContent = centerTitle;
+  center.append(titleEl);
+  const taglineEl = document.createElement('p');
+  taglineEl.className = 'lw-phase-tagline';
+  taglineEl.textContent = centerTagline;
+  center.append(taglineEl);
   wheelWrap.append(center);
 
   // Flyout panel
@@ -146,7 +171,9 @@ export default function decorate(block) {
 
           const detail = document.createElement('div');
           detail.className = 'lw-flyout-detail';
-          detail.innerHTML = `<p>${desc}</p><a href="${link.href}" class="lw-explore-link">Explore <svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`;
+          // Use the authored link text instead of hardcoding "Explore"
+          const linkText = link.textContent;
+          detail.innerHTML = `<p>${desc}</p><a href="${link.href}" class="lw-explore-link">${linkText} <svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>`;
 
           btn.addEventListener('click', () => {
             const isOpen = item.classList.contains('is-open');
@@ -176,8 +203,8 @@ export default function decorate(block) {
       svgEl.querySelectorAll('.lw-arc').forEach((a) => a.classList.remove('is-active', 'is-dim'));
       flyout.classList.remove('is-open');
       flyoutCard.querySelectorAll('.lw-flyout-panel').forEach((p) => p.classList.remove('is-active'));
-      center.querySelector('.lw-phase-title').textContent = 'Event lifecycle';
-      center.querySelector('.lw-phase-tagline').textContent = 'Seamless event marketing and management, real results';
+      titleEl.textContent = centerTitle;
+      taglineEl.textContent = centerTagline;
       return;
     }
 
@@ -188,8 +215,8 @@ export default function decorate(block) {
       a.classList.toggle('is-dim', i !== idx);
     });
 
-    center.querySelector('.lw-phase-title').textContent = phases[idx].name;
-    center.querySelector('.lw-phase-tagline').textContent = phases[idx].tagline;
+    titleEl.textContent = phases[idx].name;
+    taglineEl.textContent = phases[idx].tagline;
 
     flyout.classList.add('is-open');
     flyoutCard.querySelectorAll('.lw-flyout-panel').forEach((p, i) => {

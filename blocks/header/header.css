@@ -152,6 +152,7 @@ header {
       height: var(--header-height);
       display: flex;
       justify-content: space-between;
+      align-items: center;
 
       p,
       a {
@@ -182,8 +183,16 @@ header {
       }
     }
 
-    .action-wrapper {
-      right: -23px;
+    .action-wrapper.nav-toggle {
+      display: flex;
+      align-items: center;
+      height: var(--header-height);
+      margin-right: -12px;
+
+      button {
+        cursor: pointer;
+        color: var(--color-dark-blue);
+      }
     }
   }
 
@@ -330,7 +339,8 @@ header {
         margin: 0;
       }
 
-      .action-wrapper.more {
+      .action-wrapper.more,
+      .action-wrapper.nav-toggle {
         display: none;
       }
     }

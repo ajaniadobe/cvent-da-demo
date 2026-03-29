@@ -29,10 +29,18 @@
   line-height: 0;
 }
 
-.cards-feature > ul > li img {
+/* photo images wrapped in <picture> */
+.cards-feature .cards-card-image picture img {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
+}
+
+/* icon/SVG images (standalone <img>, not in <picture>) */
+.cards-feature .cards-card-image > img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
 }
 
 .cards-feature .cards-card-body {

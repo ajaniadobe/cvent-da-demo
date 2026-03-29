@@ -3,7 +3,13 @@
    curved SVG text labels, center content, and flyout feature panel.
    Matches the Cvent homepage lifecycle wheel design. */
 
+/* Phase colors — override with CSS custom properties */
 .lifecycle-wheel {
+  --lw-color-0: #8888d8;
+  --lw-color-1: #8860cc;
+  --lw-color-2: #30b0b8;
+  --lw-color-3: #48c8a8;
+
   text-align: center;
 }
 
@@ -54,6 +60,11 @@
   stroke-width: 3;
   transition: opacity 0.4s, stroke 0.3s;
 }
+
+.lw-arc-0 { fill: var(--lw-color-0); }
+.lw-arc-1 { fill: var(--lw-color-1); }
+.lw-arc-2 { fill: var(--lw-color-2); }
+.lw-arc-3 { fill: var(--lw-color-3); }
 
 .lw-arc:hover {
   opacity: 0.92;
@@ -267,38 +278,38 @@
 
 /* Phase-specific button gradient colors + triangle pointer color */
 .lw-flyout-panel[data-phase="0"] .lw-flyout-btn {
-  background: linear-gradient(135deg, #aab0f0, #8888d8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--lw-color-0), #fff 20%), var(--lw-color-0));
 }
 
 .lw-flyout-panel[data-phase="0"] .lw-flyout-item.is-open .lw-flyout-btn::after {
-  border-top-color: #8888d8;
+  border-top-color: var(--lw-color-0);
   opacity: 1;
 }
 
 .lw-flyout-panel[data-phase="1"] .lw-flyout-btn {
-  background: linear-gradient(135deg, #b298e8, #8860cc);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--lw-color-1), #fff 20%), var(--lw-color-1));
 }
 
 .lw-flyout-panel[data-phase="1"] .lw-flyout-item.is-open .lw-flyout-btn::after {
-  border-top-color: #8860cc;
+  border-top-color: var(--lw-color-1);
   opacity: 1;
 }
 
 .lw-flyout-panel[data-phase="2"] .lw-flyout-btn {
-  background: linear-gradient(135deg, #68d4dc, #30b0b8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--lw-color-2), #fff 20%), var(--lw-color-2));
 }
 
 .lw-flyout-panel[data-phase="2"] .lw-flyout-item.is-open .lw-flyout-btn::after {
-  border-top-color: #30b0b8;
+  border-top-color: var(--lw-color-2);
   opacity: 1;
 }
 
 .lw-flyout-panel[data-phase="3"] .lw-flyout-btn {
-  background: linear-gradient(135deg, #80e8cc, #48c8a8);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--lw-color-3), #fff 20%), var(--lw-color-3));
 }
 
 .lw-flyout-panel[data-phase="3"] .lw-flyout-item.is-open .lw-flyout-btn::after {
-  border-top-color: #48c8a8;
+  border-top-color: var(--lw-color-3);
   opacity: 1;
 }
 
