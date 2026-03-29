@@ -74,8 +74,8 @@
   --body-font-size-m: 16px;
   --body-font-size-s: 14px;
   --body-font-size-xs: 12px;
-  --body-line-height: 1.4;
-  --body-letter-spacing: 0.6px;
+  --body-line-height: 1.5;
+  --body-letter-spacing: normal;
 
   /* buttons */
   --button-border-radius: 10px;
