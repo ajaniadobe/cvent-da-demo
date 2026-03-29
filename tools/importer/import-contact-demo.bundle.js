@@ -547,7 +547,7 @@ var CustomImportScript = (() => {
   // tools/importer/transformers/cvent-sections.js
   var TransformHook2 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform2(hookName, element, payload) {
-    if (hookName === TransformHook2.afterTransform) {
+    if (hookName === TransformHook2.beforeTransform) {
       const { document } = payload;
       const sections = payload.template && payload.template.sections;
       if (!sections || sections.length < 2) return;

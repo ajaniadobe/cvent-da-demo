@@ -68,8 +68,31 @@ var CustomImportScript = (() => {
         sidebarCell.push(formHeading.cloneNode(true));
       }
       const form = sidebar.querySelector("form");
+      let hasRealFields = false;
       if (form) {
+        const inputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), select, textarea');
+        hasRealFields = inputs.length > 0;
+      }
+      if (hasRealFields) {
         sidebarCell.push(form.cloneNode(true));
+      } else {
+        const fields = [
+          "First name|text|*",
+          "Last name|text|*",
+          "Work email|email|*",
+          "Phone|tel|*",
+          "Organization|text|*",
+          "Job function|select|*|Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other",
+          "Country|select|*|Select Country, USA, Canada, United Kingdom, Germany, Australia"
+        ];
+        fields.forEach((f) => {
+          const p = document.createElement("p");
+          p.textContent = f;
+          sidebarCell.push(p);
+        });
+        const submitP = document.createElement("p");
+        submitP.textContent = formHeading ? "Submit" : "Request a demo";
+        sidebarCell.push(submitP);
       }
     }
     if (contentCell.length > 0 || sidebarCell.length > 0) {
@@ -181,6 +204,32 @@ var CustomImportScript = (() => {
       } else {
         cells.push([contentCol, mediaCol]);
       }
+      const block2 = WebImporter.Blocks.createBlock(document, {
+        name: "columns-media",
+        cells
+      });
+      element.replaceWith(block2);
+      return;
+    }
+    const bannerMedia = element.querySelector(".header-banner-media");
+    if (bannerMedia) {
+      const contentSide = bannerMedia.querySelector(".header-banner-media--content");
+      const mediaSide = bannerMedia.querySelector(".header-banner-media--media");
+      const contentCol = [];
+      const mediaCol = [];
+      if (contentSide) {
+        const wysiwyg = contentSide.querySelector(".field--name-field-wysiwyg");
+        const contentSource = wysiwyg || contentSide;
+        Array.from(contentSource.querySelectorAll("h1, h2, h3, h4, p, ul, ol, a")).forEach((el) => {
+          if (el.tagName === "A" && el.parentElement && el.parentElement.tagName === "P") return;
+          contentCol.push(el);
+        });
+      }
+      if (mediaSide) {
+        const pic = mediaSide.querySelector("picture, img");
+        if (pic) mediaCol.push(pic);
+      }
+      cells.push([contentCol, mediaCol]);
       const block2 = WebImporter.Blocks.createBlock(document, {
         name: "columns-media",
         cells
@@ -501,7 +550,7 @@ var CustomImportScript = (() => {
   // tools/importer/transformers/cvent-sections.js
   var TransformHook2 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform2(hookName, element, payload) {
-    if (hookName === TransformHook2.afterTransform) {
+    if (hookName === TransformHook2.beforeTransform) {
       const { document } = payload;
       const sections = payload.template && payload.template.sections;
       if (!sections || sections.length < 2) return;
