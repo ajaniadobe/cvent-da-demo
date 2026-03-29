@@ -185,6 +185,14 @@ async function decorateHeader(fragment) {
  * @param {Element} el The header element
  */
 export default async function init(el) {
+  // Skip-to-content link for keyboard/screen-reader users
+  const skipLink = document.createElement('a');
+  skipLink.href = '#main';
+  skipLink.className = 'skip-to-content';
+  skipLink.textContent = 'Skip to main content';
+  el.prepend(skipLink);
+  document.querySelector('main')?.setAttribute('id', 'main');
+
   const headerMeta = getMetadata('header');
   const path = headerMeta || HEADER_PATH;
   try {

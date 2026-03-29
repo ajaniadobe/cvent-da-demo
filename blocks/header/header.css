@@ -1,3 +1,23 @@
+/* Skip-to-content link: visible only on keyboard focus */
+header .skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 1001;
+  background: var(--color-dark-blue);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: top 0.2s;
+}
+
+header .skip-to-content:focus {
+  top: 0;
+}
+
 header {
   --logo-width: 108px;
   --logo-height: 32px;
