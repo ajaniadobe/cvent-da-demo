@@ -177,6 +177,32 @@ var CustomImportScript = (() => {
       element.replaceWith(block2);
       return;
     }
+    const bannerMedia = element.querySelector(".header-banner-media");
+    if (bannerMedia) {
+      const contentSide = bannerMedia.querySelector(".header-banner-media--content");
+      const mediaSide = bannerMedia.querySelector(".header-banner-media--media");
+      const contentCol = [];
+      const mediaCol = [];
+      if (contentSide) {
+        const wysiwyg = contentSide.querySelector(".field--name-field-wysiwyg");
+        const contentSource = wysiwyg || contentSide;
+        Array.from(contentSource.querySelectorAll("h1, h2, h3, h4, p, ul, ol, a")).forEach((el) => {
+          if (el.tagName === "A" && el.parentElement && el.parentElement.tagName === "P") return;
+          contentCol.push(el);
+        });
+      }
+      if (mediaSide) {
+        const pic = mediaSide.querySelector("picture, img");
+        if (pic) mediaCol.push(pic);
+      }
+      cells.push([contentCol, mediaCol]);
+      const block2 = WebImporter.Blocks.createBlock(document, {
+        name: "columns-media",
+        cells
+      });
+      element.replaceWith(block2);
+      return;
+    }
     const contentBar = element.querySelector(".compound-content-bar");
     if (contentBar) {
       const contentItems = contentBar.querySelectorAll(".field--name-field-p-content-bar-items > .field__item");
@@ -276,12 +302,156 @@ var CustomImportScript = (() => {
           textCell.push(child.cloneNode(true));
         });
       }
+      const ctaLink = card.querySelector(".field--name-field-p-link a");
+      if (ctaLink) {
+        textCell.push(ctaLink.cloneNode(true));
+      }
       if (imageCell.length > 0 || textCell.length > 0) {
         cells.push([imageCell, textCell]);
       }
     });
     const block = WebImporter.Blocks.createBlock(document, {
       name: "cards-testimonial",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/cards-feature.js
+  function parse5(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const items = element.querySelectorAll(".paragraph--type--simple-icon-content");
+    items.forEach((item) => {
+      const icon = item.querySelector(".simple-icon-content__icon img");
+      const label = item.querySelector(".simple-icon-content__content h3");
+      const description = item.querySelector(".simple-icon-content__content .field--name-field-description");
+      const imageCell = [];
+      const textCell = [];
+      if (icon) {
+        imageCell.push(icon.cloneNode(true));
+      }
+      if (label) {
+        textCell.push(label.cloneNode(true));
+      }
+      if (description) {
+        Array.from(description.children).forEach((child) => textCell.push(child.cloneNode(true)));
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-feature",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form.js
+  function parse6(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const contentWrap = element.querySelector(".field--name-field-p-content-item");
+    if (contentWrap) {
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img, a");
+      const frag = document.createDocumentFragment();
+      contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
+      element.before(frag);
+    }
+    const cells = [];
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      if (input.name === "cpt" || input.name === "honeypot") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.name && input.name.toLowerCase().includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.name && input.name.toLowerCase().includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      }
+      const isRequired = input.required || input.getAttribute("aria-required") === "true" || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---"));
+        row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
+    const submitText = submitBtn ? submitBtn.textContent.trim() : "Contact us";
+    cells.push([submitText || "Contact us"]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/logo-wall.js
+  function parse7(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, h2");
+    if (heading) {
+      cells.push([heading.cloneNode(true)]);
+    }
+    const imgs = element.querySelectorAll("img");
+    const logoContainer = document.createElement("div");
+    let logoCount = 0;
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.includes("pixel") || src.includes("tracking")) return;
+      const p = document.createElement("p");
+      p.appendChild(img.cloneNode(true));
+      logoContainer.appendChild(p);
+      logoCount++;
+    });
+    if (logoCount > 0) {
+      cells.push([logoContainer]);
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "logo-wall",
       cells
     });
     element.replaceWith(block);
@@ -474,7 +644,10 @@ var CustomImportScript = (() => {
     "hero-product-form": parse,
     "tabs-integrations": parse2,
     "columns-media": parse3,
-    "cards-testimonial": parse4
+    "cards-testimonial": parse4,
+    "cards-feature": parse5,
+    "form": parse6,
+    "logo-wall": parse7
   };
   var PAGE_TEMPLATE = {
     name: "product-platform",
@@ -503,7 +676,9 @@ var CustomImportScript = (() => {
       {
         name: "columns-media",
         instances: [
-          ".paragraph--type--compound-media-bar"
+          ".paragraph--type--compound-media-bar",
+          ".paragraph--type--header-banner-media",
+          ".paragraph--type--compound-content-bar"
         ]
       },
       {
@@ -511,15 +686,33 @@ var CustomImportScript = (() => {
         instances: [
           ".paragraph--type--layout-content.column-count-3"
         ]
+      },
+      {
+        name: "cards-feature",
+        instances: [
+          ".paragraph--type--layout-content.column-count-4"
+        ]
+      },
+      {
+        name: "form",
+        instances: [
+          ".paragraph--type--compound-form"
+        ]
+      },
+      {
+        name: "logo-wall",
+        instances: [
+          ".paragraph--type--logo-bar"
+        ]
       }
     ],
     sections: [
       {
         id: "section-1",
-        name: "Hero with Form",
-        selector: ".paragraph--type--header-banner-modern-form",
+        name: "Hero",
+        selector: [".paragraph--type--header-banner-media", ".paragraph--type--header-banner-modern-form"],
         style: null,
-        blocks: ["hero-product-form"],
+        blocks: ["columns-media", "hero-product-form"],
         defaultContent: []
       },
       {
@@ -532,14 +725,30 @@ var CustomImportScript = (() => {
       },
       {
         id: "section-3",
-        name: "Free Trial CTA",
+        name: "Feature Cards",
+        selector: [".paragraph--type--layout-content.column-count-3.bg-color-light-gray", ".paragraph--type--layout-content.column-count-2"],
+        style: "light-grey",
+        blocks: ["cards-feature"],
+        defaultContent: [".paragraph-header h2", ".paragraph-header p"]
+      },
+      {
+        id: "section-4",
+        name: "Add-ons Grid",
+        selector: ".paragraph--type--layout-content.column-count-4",
+        style: null,
+        blocks: ["cards-feature"],
+        defaultContent: [".paragraph-header h2"]
+      },
+      {
+        id: "section-5",
+        name: "CTA Banner",
         selector: ".paragraph--type--banner-basic",
         style: "blue-purple-gradient",
         blocks: [],
         defaultContent: [".banner-basic h2", ".banner-basic a"]
       },
       {
-        id: "section-4",
+        id: "section-6",
         name: "Integrations Tabs",
         selector: ".paragraph--type--layout-tabs-v",
         style: null,
@@ -547,20 +756,36 @@ var CustomImportScript = (() => {
         defaultContent: [".paragraph-header h2", ".paragraph-header p"]
       },
       {
-        id: "section-5",
-        name: "Built for Any Event",
-        selector: ".paragraph--type--compound-media-bar",
+        id: "section-7",
+        name: "Content Columns",
+        selector: [".paragraph--type--compound-media-bar", ".paragraph--type--compound-content-bar"],
         style: null,
         blocks: ["columns-media"],
         defaultContent: []
       },
       {
-        id: "section-6",
-        name: "Customer Testimonials",
-        selector: ".paragraph--type--layout-content.column-count-3",
+        id: "section-8",
+        name: "Testimonials",
+        selector: ".paragraph--type--layout-content.column-count-3:not(.bg-color-light-gray)",
         style: "light-grey",
         blocks: ["cards-testimonial"],
         defaultContent: [".paragraph-header h2"]
+      },
+      {
+        id: "section-9",
+        name: "Logo Wall",
+        selector: ".paragraph--type--logo-bar",
+        style: null,
+        blocks: ["logo-wall"],
+        defaultContent: []
+      },
+      {
+        id: "section-10",
+        name: "Form",
+        selector: ".paragraph--type--compound-form",
+        style: "blue-purple-gradient",
+        blocks: ["form"],
+        defaultContent: []
       }
     ]
   };

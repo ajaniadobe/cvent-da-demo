@@ -83,6 +83,40 @@ export default function parse(element, { document }) {
     return;
   }
 
+  // Pattern 1b: header-banner-media (hero with media — used on pricing, legal, etc.)
+  const bannerMedia = element.querySelector('.header-banner-media');
+  if (bannerMedia) {
+    const contentSide = bannerMedia.querySelector('.header-banner-media--content');
+    const mediaSide = bannerMedia.querySelector('.header-banner-media--media');
+
+    const contentCol = [];
+    const mediaCol = [];
+
+    if (contentSide) {
+      const wysiwyg = contentSide.querySelector('.field--name-field-wysiwyg');
+      const contentSource = wysiwyg || contentSide;
+      Array.from(contentSource.querySelectorAll('h1, h2, h3, h4, p, ul, ol, a')).forEach((el) => {
+        // Skip links already inside a paragraph
+        if (el.tagName === 'A' && el.parentElement && el.parentElement.tagName === 'P') return;
+        contentCol.push(el);
+      });
+    }
+
+    if (mediaSide) {
+      const pic = mediaSide.querySelector('picture, img');
+      if (pic) mediaCol.push(pic);
+    }
+
+    cells.push([contentCol, mediaCol]);
+
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: 'columns-media',
+      cells,
+    });
+    element.replaceWith(block);
+    return;
+  }
+
   // Pattern 2: compound-content-bar
   // Structure: .compound-content-bar__container > .field--name-field-p-content-bar-items > .field__item (one per column)
   const contentBar = element.querySelector('.compound-content-bar');

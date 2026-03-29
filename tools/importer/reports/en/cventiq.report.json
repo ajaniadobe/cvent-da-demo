@@ -2,7 +2,7 @@
   "status": "success",
   "url": "https://www.cvent.com/en/cventiq",
   "path": "en/cventiq",
-  "timestamp": "2026-03-28T22:25:34.453Z",
+  "timestamp": "2026-03-29T22:23:24.548Z",
   "title": "CventIQ: AI Solutions for Events",
   "template": "product-platform",
   "blocks": [
@@ -17,11 +17,14 @@
     "columns-media",
     "columns-media",
     "columns-media",
+    "columns-media",
+    "columns-media",
     "cards-testimonial",
     "cards-testimonial",
     "cards-testimonial",
     "cards-testimonial",
     "cards-testimonial",
-    "cards-testimonial"
+    "cards-testimonial",
+    "cards-feature"
   ]
 }

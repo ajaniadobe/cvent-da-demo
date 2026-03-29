@@ -61,6 +61,12 @@ export default function parse(element, { document }) {
       });
     }
 
+    // Get CTA link (e.g., "Get pricing" on pricing page cards)
+    const ctaLink = card.querySelector('.field--name-field-p-link a');
+    if (ctaLink) {
+      textCell.push(ctaLink.cloneNode(true));
+    }
+
     if (imageCell.length > 0 || textCell.length > 0) {
       cells.push([imageCell, textCell]);
     }

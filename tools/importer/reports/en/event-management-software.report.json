@@ -2,13 +2,20 @@
   "status": "success",
   "url": "https://www.cvent.com/en/event-management-software",
   "path": "en/event-management-software",
-  "timestamp": "2026-03-28T22:24:54.167Z",
+  "timestamp": "2026-03-29T22:22:47.616Z",
   "title": "Online Event Management Software | Cvent",
   "template": "product-platform",
   "blocks": [
     "hero-product-form",
     "tabs-integrations",
     "columns-media",
-    "cards-testimonial"
+    "cards-testimonial",
+    "logo-wall",
+    "logo-wall",
+    "logo-wall",
+    "logo-wall",
+    "logo-wall",
+    "logo-wall",
+    "logo-wall"
   ]
 }
