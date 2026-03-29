@@ -2,10 +2,12 @@
   "status": "success",
   "url": "https://www.cvent.com/en/request-demo",
   "path": "en/request-demo",
-  "timestamp": "2026-03-28T22:26:54.796Z",
+  "timestamp": "2026-03-29T22:58:53.181Z",
   "title": "Cvent Demo | Cvent",
   "template": "contact-demo",
   "blocks": [
-    "hero-product-form"
+    "hero-product-form",
+    "cards-testimonial",
+    "logo-wall"
   ]
 }
