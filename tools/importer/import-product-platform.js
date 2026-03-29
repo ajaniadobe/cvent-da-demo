@@ -6,6 +6,9 @@ import heroProductFormParser from './parsers/hero-product-form.js';
 import tabsIntegrationsParser from './parsers/tabs-integrations.js';
 import columnsMediaParser from './parsers/columns-media.js';
 import cardsTestimonialParser from './parsers/cards-testimonial.js';
+import cardsFeatureParser from './parsers/cards-feature.js';
+import formParser from './parsers/form.js';
+import logoWallParser from './parsers/logo-wall.js';
 
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
@@ -17,6 +20,9 @@ const parsers = {
   'tabs-integrations': tabsIntegrationsParser,
   'columns-media': columnsMediaParser,
   'cards-testimonial': cardsTestimonialParser,
+  'cards-feature': cardsFeatureParser,
+  'form': formParser,
+  'logo-wall': logoWallParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION
@@ -48,6 +54,8 @@ const PAGE_TEMPLATE = {
       name: 'columns-media',
       instances: [
         '.paragraph--type--compound-media-bar',
+        '.paragraph--type--header-banner-media',
+        '.paragraph--type--compound-content-bar',
       ],
     },
     {
@@ -56,14 +64,32 @@ const PAGE_TEMPLATE = {
         '.paragraph--type--layout-content.column-count-3',
       ],
     },
+    {
+      name: 'cards-feature',
+      instances: [
+        '.paragraph--type--layout-content.column-count-4',
+      ],
+    },
+    {
+      name: 'form',
+      instances: [
+        '.paragraph--type--compound-form',
+      ],
+    },
+    {
+      name: 'logo-wall',
+      instances: [
+        '.paragraph--type--logo-bar',
+      ],
+    },
   ],
   sections: [
     {
       id: 'section-1',
-      name: 'Hero with Form',
-      selector: '.paragraph--type--header-banner-modern-form',
+      name: 'Hero',
+      selector: ['.paragraph--type--header-banner-media', '.paragraph--type--header-banner-modern-form'],
       style: null,
-      blocks: ['hero-product-form'],
+      blocks: ['columns-media', 'hero-product-form'],
       defaultContent: [],
     },
     {
@@ -76,14 +102,30 @@ const PAGE_TEMPLATE = {
     },
     {
       id: 'section-3',
-      name: 'Free Trial CTA',
+      name: 'Feature Cards',
+      selector: ['.paragraph--type--layout-content.column-count-3.bg-color-light-gray', '.paragraph--type--layout-content.column-count-2'],
+      style: 'light-grey',
+      blocks: ['cards-feature'],
+      defaultContent: ['.paragraph-header h2', '.paragraph-header p'],
+    },
+    {
+      id: 'section-4',
+      name: 'Add-ons Grid',
+      selector: '.paragraph--type--layout-content.column-count-4',
+      style: null,
+      blocks: ['cards-feature'],
+      defaultContent: ['.paragraph-header h2'],
+    },
+    {
+      id: 'section-5',
+      name: 'CTA Banner',
       selector: '.paragraph--type--banner-basic',
       style: 'blue-purple-gradient',
       blocks: [],
       defaultContent: ['.banner-basic h2', '.banner-basic a'],
     },
     {
-      id: 'section-4',
+      id: 'section-6',
       name: 'Integrations Tabs',
       selector: '.paragraph--type--layout-tabs-v',
       style: null,
@@ -91,20 +133,36 @@ const PAGE_TEMPLATE = {
       defaultContent: ['.paragraph-header h2', '.paragraph-header p'],
     },
     {
-      id: 'section-5',
-      name: 'Built for Any Event',
-      selector: '.paragraph--type--compound-media-bar',
+      id: 'section-7',
+      name: 'Content Columns',
+      selector: ['.paragraph--type--compound-media-bar', '.paragraph--type--compound-content-bar'],
       style: null,
       blocks: ['columns-media'],
       defaultContent: [],
     },
     {
-      id: 'section-6',
-      name: 'Customer Testimonials',
-      selector: '.paragraph--type--layout-content.column-count-3',
+      id: 'section-8',
+      name: 'Testimonials',
+      selector: '.paragraph--type--layout-content.column-count-3:not(.bg-color-light-gray)',
       style: 'light-grey',
       blocks: ['cards-testimonial'],
       defaultContent: ['.paragraph-header h2'],
+    },
+    {
+      id: 'section-9',
+      name: 'Logo Wall',
+      selector: '.paragraph--type--logo-bar',
+      style: null,
+      blocks: ['logo-wall'],
+      defaultContent: [],
+    },
+    {
+      id: 'section-10',
+      name: 'Form',
+      selector: '.paragraph--type--compound-form',
+      style: 'blue-purple-gradient',
+      blocks: ['form'],
+      defaultContent: [],
     },
   ],
 };
