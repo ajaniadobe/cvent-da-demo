@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -328,6 +311,7 @@ var CustomImportScript = (() => {
       const featuresDiv = document.createElement("div");
       const accordionItems = quadrant.querySelectorAll(".accordion-item");
       accordionItems.forEach((item) => {
+        const featureName = item.querySelector(".inner-category span, .desktop-accordion-tab span");
         const listItems = item.querySelectorAll(".accordion-list li");
         listItems.forEach((li) => {
           const link = li.querySelector("a");
@@ -336,7 +320,7 @@ var CustomImportScript = (() => {
             const linkP = document.createElement("p");
             const a = document.createElement("a");
             a.setAttribute("href", link.getAttribute("href") || "");
-            a.textContent = link.textContent.trim();
+            a.textContent = featureName && featureName.textContent.trim() || link.textContent.trim();
             linkP.append(a);
             featuresDiv.append(linkP);
           }
@@ -358,19 +342,48 @@ var CustomImportScript = (() => {
     }
   }
 
-  // tools/importer/parsers/form.js
+  // tools/importer/parsers/logo-wall.js
   function parse6(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, h2");
+    if (heading) {
+      cells.push([heading.cloneNode(true)]);
+    }
+    const imgs = element.querySelectorAll("img");
+    const logoContainer = document.createElement("div");
+    let logoCount = 0;
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.includes("pixel") || src.includes("tracking")) return;
+      const p = document.createElement("p");
+      p.appendChild(img.cloneNode(true));
+      logoContainer.appendChild(p);
+      logoCount++;
+    });
+    if (logoCount > 0) {
+      cells.push([logoContainer]);
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "logo-wall",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form.js
+  function parse7(element, { document }) {
     const form = element.querySelector("form");
     if (!form) return;
     const contentWrap = element.querySelector(".field--name-field-p-content-item");
     if (contentWrap) {
-      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img, a");
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img");
       const frag = document.createDocumentFragment();
       contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
       element.before(frag);
     }
     const cells = [];
-    const heading = element.querySelector(".field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2");
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h3") || element.querySelector(".field--name-field-p-sidebar-item h2") || element.querySelector("h3") || element.querySelector("h2");
     const headingText = heading ? heading.textContent.trim() : "Contact Us";
     cells.push([headingText]);
     const processedInputs = /* @__PURE__ */ new Set();
@@ -426,8 +439,9 @@ var CustomImportScript = (() => {
       cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
     }
     const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
-    const submitText = submitBtn ? submitBtn.textContent.trim() : "Contact us";
-    cells.push([submitText || "Contact us"]);
+    let submitText = submitBtn ? submitBtn.textContent.trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Request a demo";
+    cells.push([submitText]);
     const block = WebImporter.Blocks.createBlock(document, {
       name: "Form",
       cells
@@ -621,10 +635,33 @@ var CustomImportScript = (() => {
           });
           sectionEl.after(metaBlock);
         }
+        let firstSectionNode = sectionEl;
+        if (section.defaultContent && section.defaultContent.length > 0) {
+          const allDescendants = [...sectionEl.querySelectorAll("*")];
+          const midpoint = allDescendants.length / 2;
+          section.defaultContent.forEach((dcSelector) => {
+            const dcEl = element.querySelector(dcSelector);
+            if (!dcEl) {
+              console.warn(`Default content not found: ${dcSelector}`);
+              return;
+            }
+            if (!sectionEl.contains(dcEl)) return;
+            const dcIndex = allDescendants.indexOf(dcEl);
+            const isBefore = dcIndex >= 0 && dcIndex < midpoint;
+            if (isBefore) {
+              sectionEl.before(dcEl);
+              if (firstSectionNode === sectionEl) {
+                firstSectionNode = dcEl;
+              }
+            } else {
+              sectionEl.after(dcEl);
+            }
+          });
+        }
         const isFirst = section.id === sections[0].id;
         if (!isFirst) {
           const hr = document.createElement("hr");
-          sectionEl.before(hr);
+          firstSectionNode.before(hr);
         }
       });
     }
@@ -661,6 +698,10 @@ var CustomImportScript = (() => {
         instances: ["#cvent-paragraph-layout_content-735846"]
       },
       {
+        name: "logo-wall",
+        instances: ["#cvent-paragraph-logo_bar-1542431"]
+      },
+      {
         name: "lifecycle-wheel",
         instances: ["#cvent-paragraph-reference_block-1267256"]
       },
@@ -673,9 +714,9 @@ var CustomImportScript = (() => {
       { id: "section-1", name: "Hero", selector: ".paragraph--type--header-banner-hero", style: "dark-blue", blocks: ["hero-homepage"], defaultContent: [] },
       { id: "section-2", name: "Meet CventIQ", selector: "#cvent-paragraph-compound_media_bar-1568076", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-3", name: "All-in-one Solution Stats", selector: "#cvent-paragraph-compound_media_bar-1458006", style: null, blocks: ["columns-media"], defaultContent: [] },
-      { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: [], defaultContent: ["#cvent-paragraph-logo_bar-1542431"] },
-      { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: ["lifecycle-wheel"], defaultContent: [] },
-      { id: "section-6", name: "Product Cards Grid", selector: "#cvent-paragraph-layout_content-735741", style: null, blocks: ["cards-product"], defaultContent: [".paragraph--type--layout-content.column-count-3 > .layout-content-header", "#cvent-paragraph-link_default-892976"] },
+      { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: ["logo-wall"], defaultContent: [] },
+      { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: ["lifecycle-wheel"], defaultContent: ["#cvent-paragraph-reference_block-1267256 .wheel--optional-wysiwyg"] },
+      { id: "section-6", name: "Product Cards Grid", selector: "#cvent-paragraph-layout_content-735741", style: null, blocks: ["cards-product"], defaultContent: ["#cvent-paragraph-layout_content-735741 .paragraph-header", "#cvent-paragraph-link_default-892976"] },
       { id: "section-7", name: "Venue Sourcing", selector: "#cvent-paragraph-compound_media_bar-619191", style: "blue-green-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-8", name: "Social Proof", selector: "#cvent-paragraph-compound_content_bar-1200576", style: null, blocks: ["columns-media"], defaultContent: ["#join-thousands-of-planners-and-marketers-who-love-our-software"] },
       { id: "section-9", name: "CTA How It Works", selector: "#cvent-paragraph-compound_media_bar-1461776", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
@@ -689,16 +730,74 @@ var CustomImportScript = (() => {
     "cards-product": parse3,
     "cards-news": parse4,
     "lifecycle-wheel": parse5,
-    "form": parse6
+    "logo-wall": parse6,
+    "form": parse7
   };
+  function homepageContentFreshness(hookName, element) {
+    if (hookName !== "beforeTransform") return;
+    const venueH3 = element.querySelector("#cvent-paragraph-compound_media_bar-619191 h3");
+    if (venueH3 && venueH3.textContent.trim() === "Venue sourcing made easy") {
+      venueH3.textContent = "Find the right venue faster with AI";
+      venueH3.id = "find-the-right-venue-faster-with-ai";
+      const desc = venueH3.closest(".compound-media-bar__content, .paragraph--type--simple-content");
+      if (desc) {
+        const descField = desc.querySelector(".field--name-field-description, .text-formatted");
+        if (descField) {
+          descField.innerHTML = '<p>Source the perfect venue for your next event with the\xA0<strong>Cvent Supplier Network</strong>. Let AI refine results from nearly 340K venues and quickly build strong RFPs.</p><p><a href="https://www.cvent.com/venues">Find venues for free</a></p>';
+        }
+      }
+    }
+    const socialProof = element.querySelector("#cvent-paragraph-compound_content_bar-1200576");
+    if (socialProof) {
+      const g2Img = socialProof.querySelector('img[alt*="G2"]');
+      if (g2Img && g2Img.alt.includes("2025")) {
+        g2Img.src = "https://www.cvent.com/sites/default/files/styles/column_content_width/public/image/2026-03/G2%20Badges%20Spring%202026%20Large.png.webp?itok=mXPFonFP";
+        g2Img.alt = "Three G2 awards for Users Love Us, Fall 2026 grid leader, and Easiest admin, all for Spring 2026.";
+      }
+    }
+    const featureNames = {
+      "/en/event-management-software/cvent-integrations": "Integrations",
+      "/en/event-management-software/event-reporting": "Event & attendee insights",
+      "/en/event-marketing-management/online-survey-software": "Surveys",
+      "/en/event-marketing-management/lead-capture": "Lead management",
+      "/en/event-marketing-management/engagement-score": "Engagement scoring",
+      "/en/event-marketing-management/spend-workflow": "Meeting approval & budgeting",
+      "/en/event-marketing-management/cvent-supplier-network": "Venue sourcing",
+      "/en/event-marketing-management/vendor-marketplace": "Vendor sourcing",
+      "/en/event-management-software/passkey-room-block-management": "Room block & travel",
+      "/en/event-marketing-management/cvent-event-design-software": "Venue diagramming",
+      "/en/event-marketing-management/appointments": "Networking",
+      "/en/event-marketing-management/mobile-event-apps": "Event app",
+      "/en/event-marketing-management/onarrival-event-check-in-software": "Onsite check-in & badging",
+      "/en/event-marketing-management/virtual-event-platform": "Virtual experience",
+      "/en/event-marketing-management/webinar-platform": "Webinar",
+      "/event-marketing-management/event-registration-software": "Registration",
+      "/en/event-marketing-management/custom-event-websites": "Event website",
+      "/en/event-marketing-platform": "Marketing",
+      "/en/event-marketing-management/content-management": "Speaker management",
+      "/en/event-marketing-management/exhibitor-management": "Exhibitor management"
+    };
+    const wheelEl = element.querySelector("#cvent-paragraph-reference_block-1267256");
+    if (wheelEl) {
+      wheelEl.querySelectorAll(".accordion-list a").forEach((a) => {
+        const href = (a.getAttribute("href") || "").replace(/^https:\/\/www\.cvent\.com/, "").replace(/\s+$/, "");
+        const name = featureNames[href];
+        if (name && a.textContent.trim() === "Explore") {
+          a.textContent = name;
+        }
+      });
+    }
+  }
   var transformers = [
+    homepageContentFreshness,
     transform,
     ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
   ];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
+    const enhancedPayload = {
+      ...payload,
       template: PAGE_TEMPLATE
-    });
+    };
     transformers.forEach((transformerFn) => {
       try {
         transformerFn.call(null, hookName, element, enhancedPayload);

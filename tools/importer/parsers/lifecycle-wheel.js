@@ -46,6 +46,8 @@ export default function parse(element, { document }) {
     const featuresDiv = document.createElement('div');
     const accordionItems = quadrant.querySelectorAll('.accordion-item');
     accordionItems.forEach((item) => {
+      // Feature name lives in .inner-category button span (e.g. "Venue sourcing")
+      const featureName = item.querySelector('.inner-category span, .desktop-accordion-tab span');
       const listItems = item.querySelectorAll('.accordion-list li');
       listItems.forEach((li) => {
         const link = li.querySelector('a');
@@ -54,7 +56,9 @@ export default function parse(element, { document }) {
           const linkP = document.createElement('p');
           const a = document.createElement('a');
           a.setAttribute('href', link.getAttribute('href') || '');
-          a.textContent = link.textContent.trim();
+          // Use the feature name from .inner-category if available;
+          // fall back to the link text only if no category heading exists
+          a.textContent = (featureName && featureName.textContent.trim()) || link.textContent.trim();
           linkP.append(a);
           featuresDiv.append(linkP);
         }
