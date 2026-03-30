@@ -204,6 +204,13 @@
   z-index: 2;
 }
 
+/* desktop: remove bottom padding (notification card sits at bottom edge) */
+@media (width >= 900px) {
+  .hero-bottom-wrapper {
+    padding-bottom: 0;
+  }
+}
+
 /* override block spacing rule (.block-content > * + *) */
 .block-content > .hero-bottom-wrapper {
   margin-top: 0;
@@ -225,7 +232,7 @@
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translate(-50%, 50%);
+  transform: translateX(-50%);
   z-index: 3;
   background:
     linear-gradient(rgb(0 202 157), rgb(0 106 225) 50%, rgb(132 87 217)) no-repeat 0 50% / 6px 100%,
@@ -249,8 +256,8 @@
   margin-bottom: 0;
 }
 
-/* higher specificity to override .section.dark-blue inverted button styles */
-.section.dark-blue .hero-notification-card a.btn-primary {
+/* notification card button styles */
+.hero-notification-card a.btn-primary {
   background-color: var(--color-blue);
   border-color: var(--color-blue);
   color: var(--color-light);
@@ -259,8 +266,8 @@
   padding: 10px 24px;
 }
 
-.section.dark-blue .hero-notification-card a.btn-primary:hover,
-.section.dark-blue .hero-notification-card a.btn-primary:focus {
+.hero-notification-card a.btn-primary:hover,
+.hero-notification-card a.btn-primary:focus {
   background-color: var(--color-blue-hover);
   border-color: var(--color-blue-hover);
   color: var(--color-light);
