@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -187,6 +170,21 @@ var CustomImportScript = (() => {
             contentCol.push(el);
           });
         }
+        const statItems = contentSource.querySelectorAll(".paragraph--type--simple-stat");
+        statItems.forEach((stat) => {
+          const numEl = stat.querySelector(".field--name-field-stat");
+          const descEl = stat.querySelector(".field--name-field-description p");
+          if (numEl) {
+            const p = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = numEl.textContent.trim();
+            p.append(strong);
+            contentCol.push(p);
+          }
+          if (descEl) {
+            contentCol.push(descEl);
+          }
+        });
       }
       const isMediaFirst = element.classList.contains("media-position-left") || element.classList.contains("media-order-first");
       if (isMediaFirst) {
@@ -381,13 +379,13 @@ var CustomImportScript = (() => {
     if (!form) return;
     const contentWrap = element.querySelector(".field--name-field-p-content-item");
     if (contentWrap) {
-      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img, a");
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img");
       const frag = document.createDocumentFragment();
       contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
       element.before(frag);
     }
     const cells = [];
-    const heading = element.querySelector(".field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2");
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h3") || element.querySelector(".field--name-field-p-sidebar-item h2") || element.querySelector("h3") || element.querySelector("h2");
     const headingText = heading ? heading.textContent.trim() : "Contact Us";
     cells.push([headingText]);
     const processedInputs = /* @__PURE__ */ new Set();
@@ -443,8 +441,9 @@ var CustomImportScript = (() => {
       cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
     }
     const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
-    const submitText = submitBtn ? submitBtn.textContent.trim() : "Contact us";
-    cells.push([submitText || "Contact us"]);
+    let submitText = submitBtn ? submitBtn.textContent.trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Request a demo";
+    cells.push([submitText]);
     const block = WebImporter.Blocks.createBlock(document, {
       name: "Form",
       cells
@@ -476,6 +475,83 @@ var CustomImportScript = (() => {
     if (cells.length === 0) return;
     const block = WebImporter.Blocks.createBlock(document, {
       name: "logo-wall",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/tabs-horizontal.js
+  function parse8(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, .paragraph-header .field--name-field-heading");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const description = element.querySelector(".paragraph-header .field--name-field-description p");
+    if (description) {
+      element.before(description.cloneNode(true));
+    }
+    const tabLinks = element.querySelectorAll('ul[role="tablist"] a[role="tab"], ul.tabs a.tab-link');
+    const tabPanels = element.querySelectorAll('.paragraph--type--compound-tab-h[role="tabpanel"], .paragraph--type--compound-tab-h');
+    const count = Math.min(tabLinks.length, tabPanels.length);
+    for (let i = 0; i < count; i++) {
+      const labelText = tabLinks[i].textContent.trim();
+      const panel = tabPanels[i];
+      const contentCell = [];
+      const panelHeadings = panel.querySelectorAll("h2, h3, h4");
+      panelHeadings.forEach((h) => contentCell.push(h.cloneNode(true)));
+      const panelDescriptions = panel.querySelectorAll(".field--name-field-description p, .simple-content p");
+      panelDescriptions.forEach((p) => {
+        if (p.textContent.trim()) contentCell.push(p.cloneNode(true));
+      });
+      const panelImages = panel.querySelectorAll(".field--name-field-image img, .field--name-field-p-media-item img");
+      panelImages.forEach((img) => contentCell.push(img.cloneNode(true)));
+      const panelLinks = panel.querySelectorAll("a.cta-link, .field--name-field-link a");
+      panelLinks.forEach((a) => contentCell.push(a.cloneNode(true)));
+      if (contentCell.length > 0) {
+        cells.push([labelText, contentCell]);
+      }
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "tabs-integrations",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/accordion.js
+  function parse9(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const items = element.querySelectorAll(".accordion-item[data-accordion-item], .field__item.accordion-item");
+    items.forEach((item) => {
+      const titleEl = item.querySelector("a.accordion-title, .field--name-field-accordion-label");
+      const question = titleEl ? titleEl.textContent.trim() : "";
+      if (!question) return;
+      const contentEl = item.querySelector(".accordion-content .field--name-field-description");
+      const answerCell = [];
+      if (contentEl) {
+        [...contentEl.children].forEach((child) => {
+          answerCell.push(child.cloneNode(true));
+        });
+      }
+      if (answerCell.length === 0) {
+        const fallback = item.querySelector(".accordion-content");
+        if (fallback) {
+          const p = document.createElement("p");
+          p.textContent = fallback.textContent.trim();
+          answerCell.push(p);
+        }
+      }
+      cells.push([question, answerCell]);
+    });
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Accordion",
       cells
     });
     element.replaceWith(block);
@@ -667,10 +743,33 @@ var CustomImportScript = (() => {
           });
           sectionEl.after(metaBlock);
         }
+        let firstSectionNode = sectionEl;
+        if (section.defaultContent && section.defaultContent.length > 0) {
+          const allDescendants = [...sectionEl.querySelectorAll("*")];
+          const midpoint = allDescendants.length / 2;
+          section.defaultContent.forEach((dcSelector) => {
+            const dcEl = element.querySelector(dcSelector);
+            if (!dcEl) {
+              console.warn(`Default content not found: ${dcSelector}`);
+              return;
+            }
+            if (!sectionEl.contains(dcEl)) return;
+            const dcIndex = allDescendants.indexOf(dcEl);
+            const isBefore = dcIndex >= 0 && dcIndex < midpoint;
+            if (isBefore) {
+              sectionEl.before(dcEl);
+              if (firstSectionNode === sectionEl) {
+                firstSectionNode = dcEl;
+              }
+            } else {
+              sectionEl.after(dcEl);
+            }
+          });
+        }
         const isFirst = section.id === sections[0].id;
         if (!isFirst) {
           const hr = document.createElement("hr");
-          sectionEl.before(hr);
+          firstSectionNode.before(hr);
         }
       });
     }
@@ -680,11 +779,13 @@ var CustomImportScript = (() => {
   var parsers = {
     "hero-product-form": parse,
     "tabs-integrations": parse2,
+    "tabs-horizontal": parse8,
     "columns-media": parse3,
     "cards-testimonial": parse4,
     "cards-feature": parse5,
     "form": parse6,
-    "logo-wall": parse7
+    "logo-wall": parse7,
+    "accordion": parse9
   };
   var PAGE_TEMPLATE = {
     name: "product-platform",
@@ -740,6 +841,18 @@ var CustomImportScript = (() => {
         name: "logo-wall",
         instances: [
           ".paragraph--type--logo-bar"
+        ]
+      },
+      {
+        name: "tabs-horizontal",
+        instances: [
+          ".paragraph--type--layout-tabs-h"
+        ]
+      },
+      {
+        name: "accordion",
+        instances: [
+          ".paragraph--type--layout-accordion"
         ]
       }
     ],
@@ -831,9 +944,10 @@ var CustomImportScript = (() => {
     ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
   ];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
+    const enhancedPayload = {
+      ...payload,
       template: PAGE_TEMPLATE
-    });
+    };
     transformers.forEach((transformerFn) => {
       try {
         transformerFn.call(null, hookName, element, enhancedPayload);

@@ -17,9 +17,30 @@
  *     #header-banner-hero-sidebar        -> picture (hero image)
  */
 export default function parse(element, { document }) {
-  // Extract hero image from sidebar
+  // Extract hero image from sidebar — prefer high-res <source> over <img> fallback
   const sidebar = element.querySelector('#header-banner-hero-sidebar, .header-banner-hero__sidebar');
-  const heroImage = sidebar ? sidebar.querySelector('picture, img') : null;
+  let heroImage = null;
+  if (sidebar) {
+    const picture = sidebar.querySelector('picture');
+    if (picture) {
+      const source = picture.querySelector('source[srcset]');
+      const img = picture.querySelector('img');
+      if (source && img) {
+        // Use the higher-res source URL instead of the smaller img fallback
+        const srcset = source.getAttribute('srcset') || '';
+        const hiResSrc = srcset.split(/\s+/)[0]; // strip "1x" descriptor
+        if (hiResSrc) {
+          const newImg = document.createElement('img');
+          newImg.setAttribute('src', hiResSrc);
+          newImg.setAttribute('alt', img.getAttribute('alt') || '');
+          heroImage = newImg;
+        }
+      }
+      if (!heroImage) heroImage = picture;
+    } else {
+      heroImage = sidebar.querySelector('img');
+    }
+  }
 
   // Extract heading
   const heading = element.querySelector('.header-banner-hero__main-content h1, .header-banner-hero__main-content h2');

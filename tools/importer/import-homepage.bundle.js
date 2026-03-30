@@ -26,7 +26,27 @@ var CustomImportScript = (() => {
   // tools/importer/parsers/hero-homepage.js
   function parse(element, { document }) {
     const sidebar = element.querySelector("#header-banner-hero-sidebar, .header-banner-hero__sidebar");
-    const heroImage = sidebar ? sidebar.querySelector("picture, img") : null;
+    let heroImage = null;
+    if (sidebar) {
+      const picture = sidebar.querySelector("picture");
+      if (picture) {
+        const source = picture.querySelector("source[srcset]");
+        const img = picture.querySelector("img");
+        if (source && img) {
+          const srcset = source.getAttribute("srcset") || "";
+          const hiResSrc = srcset.split(/\s+/)[0];
+          if (hiResSrc) {
+            const newImg = document.createElement("img");
+            newImg.setAttribute("src", hiResSrc);
+            newImg.setAttribute("alt", img.getAttribute("alt") || "");
+            heroImage = newImg;
+          }
+        }
+        if (!heroImage) heroImage = picture;
+      } else {
+        heroImage = sidebar.querySelector("img");
+      }
+    }
     const heading = element.querySelector(".header-banner-hero__main-content h1, .header-banner-hero__main-content h2");
     const mainContent = element.querySelector(".header-banner-hero__main-content");
     const description = mainContent ? mainContent.querySelector(".field--name-field-description, .text-formatted") : null;

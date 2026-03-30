@@ -131,7 +131,7 @@ function decorateNavItem(li) {
   const link = li.querySelector(':scope > p > a');
   if (link) link.classList.add('main-nav-link');
   const menu = decorateMegaMenu(li) || decorateMenu(li);
-  if (!(menu || link)) return;
+  if (!menu || !link) return;
   link.addEventListener('click', (e) => {
     e.preventDefault();
     toggleMenu(li);

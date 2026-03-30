@@ -210,6 +210,239 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/accordion.js
+  function parse3(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const items = element.querySelectorAll(".accordion-item[data-accordion-item], .field__item.accordion-item");
+    items.forEach((item) => {
+      const titleEl = item.querySelector("a.accordion-title, .field--name-field-accordion-label");
+      const question = titleEl ? titleEl.textContent.trim() : "";
+      if (!question) return;
+      const contentEl = item.querySelector(".accordion-content .field--name-field-description");
+      const answerCell = [];
+      if (contentEl) {
+        [...contentEl.children].forEach((child) => {
+          answerCell.push(child.cloneNode(true));
+        });
+      }
+      if (answerCell.length === 0) {
+        const fallback = item.querySelector(".accordion-content");
+        if (fallback) {
+          const p = document.createElement("p");
+          p.textContent = fallback.textContent.trim();
+          answerCell.push(p);
+        }
+      }
+      cells.push([question, answerCell]);
+    });
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Accordion",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form-standalone.js
+  function parse4(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const cells = [];
+    const heading = form.querySelector("h3.field--name-field-heading, h3, h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      if (labelText.length > 100) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.id && input.id.includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.id && input.id.includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      } else if (inputType === "radio") {
+        edsType = "radio";
+      }
+      const isRequired = input.required || input.classList.contains("required") || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---") && !o.startsWith("Select"));
+        if (options.length > 0) row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    const fieldsets = form.querySelectorAll("fieldset");
+    fieldsets.forEach((fieldset) => {
+      const legend = fieldset.querySelector("legend");
+      if (!legend) return;
+      const legendText = legend.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      const radios = fieldset.querySelectorAll('input[type="radio"]');
+      if (radios.length === 0) return;
+      const options = [];
+      radios.forEach((radio) => {
+        const radioLabel = fieldset.querySelector(`label[for="${radio.id}"]`);
+        if (radioLabel) options.push(radioLabel.textContent.trim());
+      });
+      const isRequired = legend.textContent.includes("*");
+      cells.push([legendText, "radio", isRequired ? "*" : "", options.join(", ")]);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('input[type="submit"], button[type="submit"], .mktoButton');
+    let submitText = submitBtn ? (submitBtn.value || submitBtn.textContent || "").trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Contact us";
+    cells.push([submitText]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/cards-quote.js
+  function parse5(element, { document }) {
+    const quoteItems = element.querySelectorAll(".paragraph--type--simple-icon-content.icon-layout-top-center");
+    if (quoteItems.length === 0) return;
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    quoteItems.forEach((item) => {
+      const imageCell = [];
+      const textCell = [];
+      const img = item.querySelector(".simple-icon-content__icon img");
+      if (img) {
+        imageCell.push(img.cloneNode(true));
+      }
+      const description = item.querySelector(".simple-icon-content__content .field--name-field-description");
+      if (description) {
+        [...description.children].forEach((child) => {
+          textCell.push(child.cloneNode(true));
+        });
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-testimonial",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/cards-feature.js
+  function parse6(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const items = element.querySelectorAll(".paragraph--type--simple-icon-content");
+    items.forEach((item) => {
+      const icon = item.querySelector(".simple-icon-content__icon img");
+      const label = item.querySelector(".simple-icon-content__content h3");
+      const description = item.querySelector(".simple-icon-content__content .field--name-field-description");
+      const imageCell = [];
+      const textCell = [];
+      if (icon) {
+        imageCell.push(icon.cloneNode(true));
+      }
+      if (label) {
+        textCell.push(label.cloneNode(true));
+      }
+      if (description) {
+        Array.from(description.children).forEach((child) => textCell.push(child.cloneNode(true)));
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-feature",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/cards-testimonial.js
+  function parse7(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const cards = element.querySelectorAll(".paragraph--type--simple-card");
+    cards.forEach((card) => {
+      const imageCell = [];
+      const textCell = [];
+      const img = card.querySelector(".innerlink img");
+      if (img) {
+        imageCell.push(img.cloneNode(true));
+      }
+      const companyHeading = card.querySelector(".simple-card__content h4");
+      if (companyHeading) {
+        textCell.push(companyHeading.cloneNode(true));
+      }
+      const description = card.querySelector(".simple-card__content .field--name-field-description");
+      if (description) {
+        [...description.children].forEach((child) => {
+          textCell.push(child.cloneNode(true));
+        });
+      }
+      const ctaLink = card.querySelector(".field--name-field-p-link a");
+      if (ctaLink) {
+        textCell.push(ctaLink.cloneNode(true));
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-testimonial",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
   // tools/importer/transformers/cvent-cleanup.js
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
@@ -535,7 +768,12 @@ var CustomImportScript = (() => {
   // tools/importer/import-company-info.js
   var parsers = {
     "columns-media": parse,
-    "logo-wall": parse2
+    "logo-wall": parse2,
+    "accordion": parse3,
+    "form-standalone": parse4,
+    "cards-quote": parse5,
+    "cards-feature": parse6,
+    "cards-testimonial": parse7
   };
   var PAGE_TEMPLATE = {
     name: "company-info",
@@ -559,6 +797,36 @@ var CustomImportScript = (() => {
         name: "logo-wall",
         instances: [
           ".paragraph--type--logo-bar"
+        ]
+      },
+      {
+        name: "accordion",
+        instances: [
+          ".paragraph--type--layout-accordion"
+        ]
+      },
+      {
+        name: "form-standalone",
+        instances: [
+          ".paragraph--type--cvent-marketo-form"
+        ]
+      },
+      {
+        name: "cards-quote",
+        instances: [
+          ".paragraph--type--layout-content.column-count-2"
+        ]
+      },
+      {
+        name: "cards-feature",
+        instances: [
+          ".paragraph--type--layout-content.column-count-4"
+        ]
+      },
+      {
+        name: "cards-testimonial",
+        instances: [
+          ".paragraph--type--layout-content.column-count-3"
         ]
       }
     ],

@@ -2,10 +2,12 @@
 /* global WebImporter */
 
 import columnsMediaParser from './parsers/columns-media.js';
+import formParser from './parsers/form.js';
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
 
 const parsers = {
   'columns-media': columnsMediaParser,
+  'form': formParser,
 };
 
 const PAGE_TEMPLATE = {
@@ -18,6 +20,10 @@ const PAGE_TEMPLATE = {
     {
       name: 'columns-media',
       instances: ['.paragraph--type--compound-media-bar', '.paragraph--type--header-banner-media'],
+    },
+    {
+      name: 'form',
+      instances: ['.paragraph--type--compound-form'],
     },
   ],
 };

@@ -229,4 +229,7 @@ export default function decorate(block) {
   });
 
   block.append(layout);
+
+  // Open "Planning" phase by default (matches original site behavior)
+  activate(1);
 }

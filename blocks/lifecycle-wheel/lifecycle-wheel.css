@@ -3,6 +3,11 @@
    curved SVG text labels, center content, and flyout feature panel.
    Matches the Cvent homepage lifecycle wheel design. */
 
+/* Center the entire section containing the lifecycle wheel */
+.section:has(.lifecycle-wheel) .default-content {
+  text-align: center;
+}
+
 /* Phase colors — override with CSS custom properties */
 .lifecycle-wheel {
   --lw-color-0: #8888d8;

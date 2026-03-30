@@ -26,29 +26,19 @@
   min-height: 400px;
 }
 
-/* first row: background image (picture element) */
+/* first row: background image — hidden on mobile, shown on desktop */
 .hero-homepage > div:first-child {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-homepage picture {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
+  display: none;
 }
 
 .hero-homepage img {
-  object-fit: cover;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
-/* content rows sit above the image */
+/* content rows */
 .hero-homepage > div:not(:first-child) {
   position: relative;
-  z-index: 1;
   max-width: 600px;
 }
 
@@ -150,16 +140,19 @@
   }
 
   .hero-homepage > div:first-child {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 55%;
-    height: 100%;
-    left: auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    flex: 0 0 50%;
+    max-width: 50%;
+    order: 2;
+    align-self: flex-start;
   }
 
   .hero-homepage > div:not(:first-child) {
-    max-width: 55%;
+    flex: 0 0 50%;
+    max-width: 50%;
+    order: 1;
   }
 
   .hero-homepage h1 {
@@ -175,7 +168,20 @@
   }
 
   .hero-notification-card {
-    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+    text-align: left;
+  }
+
+  .hero-notification-card p {
+    margin: 0;
+    flex: 1;
+  }
+
+  .hero-notification-card p:last-child {
+    flex: none;
   }
 }
 
@@ -193,8 +199,16 @@
 /* hero bottom wrapper — SVG curve + notification card */
 .hero-bottom-wrapper {
   position: relative;
-  margin: 0 15px;
+  margin: 0 25px;
+  padding-bottom: 48px;
   z-index: 2;
+}
+
+/* desktop: remove bottom padding (notification card sits at bottom edge) */
+@media (width >= 900px) {
+  .hero-bottom-wrapper {
+    padding-bottom: 0;
+  }
 }
 
 /* override block spacing rule (.block-content > * + *) */
@@ -218,13 +232,18 @@
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translate(-50%, 50%);
+  transform: translateX(-50%);
   z-index: 3;
-  background: var(--color-light);
+  background:
+    linear-gradient(rgb(0 202 157), rgb(0 106 225) 50%, rgb(132 87 217)) no-repeat 0 50% / 6px 100%,
+    var(--color-light);
   border-radius: 8px;
-  padding: 16px 24px;
+  padding: 20px 24px;
   text-align: center;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
+  box-shadow: 0 0 12px 2px rgb(0 0 0 / 10%);
+  width: 90%;
+  max-width: 1200px;
+  box-sizing: border-box;
 }
 
 .hero-notification-card p {
@@ -237,8 +256,8 @@
   margin-bottom: 0;
 }
 
-/* higher specificity to override .section.dark-blue inverted button styles */
-.section.dark-blue .hero-notification-card a.btn-primary {
+/* notification card button styles */
+.hero-notification-card a.btn-primary {
   background-color: var(--color-blue);
   border-color: var(--color-blue);
   color: var(--color-light);
@@ -247,8 +266,8 @@
   padding: 10px 24px;
 }
 
-.section.dark-blue .hero-notification-card a.btn-primary:hover,
-.section.dark-blue .hero-notification-card a.btn-primary:focus {
+.hero-notification-card a.btn-primary:hover,
+.hero-notification-card a.btn-primary:focus {
   background-color: var(--color-blue-hover);
   border-color: var(--color-blue-hover);
   color: var(--color-light);
@@ -263,8 +282,14 @@
     max-width: 1400px;
   }
 
+  .hero-homepage > div:first-child {
+    flex: 0 0 45%;
+    max-width: 45%;
+  }
+
   .hero-homepage > div:not(:first-child) {
-    max-width: 50%;
+    flex: 0 0 55%;
+    max-width: 55%;
   }
 
   .hero-bottom-wrapper {

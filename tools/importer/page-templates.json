@@ -688,6 +688,36 @@
             ".paragraph--type--header-banner-media"
           ]
         }
+      ],
+      "sections": [
+        {
+          "id": "section-1",
+          "name": "Hero with Form",
+          "selector": ".paragraph--type--header-banner-modern-form",
+          "style": null,
+          "blocks": ["hero-product-form"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-2",
+          "name": "Social Proof",
+          "selector": ".paragraph--type--compound-media-bar",
+          "style": null,
+          "blocks": ["columns-media"],
+          "defaultContent": []
+        },
+        {
+          "id": "section-3",
+          "name": "CTA Banner",
+          "selector": ".paragraph--type--banner-basic",
+          "style": "blue-purple-gradient",
+          "blocks": [],
+          "defaultContent": [
+            ".banner-basic h3",
+            ".banner-basic p",
+            ".banner-basic a"
+          ]
+        }
       ]
     },
     {

@@ -246,6 +246,114 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/cards-feature.js
+  function parse3(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const items = element.querySelectorAll(".paragraph--type--simple-icon-content");
+    items.forEach((item) => {
+      const icon = item.querySelector(".simple-icon-content__icon img");
+      const label = item.querySelector(".simple-icon-content__content h3");
+      const description = item.querySelector(".simple-icon-content__content .field--name-field-description");
+      const imageCell = [];
+      const textCell = [];
+      if (icon) {
+        imageCell.push(icon.cloneNode(true));
+      }
+      if (label) {
+        textCell.push(label.cloneNode(true));
+      }
+      if (description) {
+        Array.from(description.children).forEach((child) => textCell.push(child.cloneNode(true)));
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-feature",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/cards-quote.js
+  function parse4(element, { document }) {
+    const quoteItems = element.querySelectorAll(".paragraph--type--simple-icon-content.icon-layout-top-center");
+    if (quoteItems.length === 0) return;
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    quoteItems.forEach((item) => {
+      const imageCell = [];
+      const textCell = [];
+      const img = item.querySelector(".simple-icon-content__icon img");
+      if (img) {
+        imageCell.push(img.cloneNode(true));
+      }
+      const description = item.querySelector(".simple-icon-content__content .field--name-field-description");
+      if (description) {
+        [...description.children].forEach((child) => {
+          textCell.push(child.cloneNode(true));
+        });
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-testimonial",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/tabs-horizontal.js
+  function parse5(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, .paragraph-header .field--name-field-heading");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const description = element.querySelector(".paragraph-header .field--name-field-description p");
+    if (description) {
+      element.before(description.cloneNode(true));
+    }
+    const tabLinks = element.querySelectorAll('ul[role="tablist"] a[role="tab"], ul.tabs a.tab-link');
+    const tabPanels = element.querySelectorAll('.paragraph--type--compound-tab-h[role="tabpanel"], .paragraph--type--compound-tab-h');
+    const count = Math.min(tabLinks.length, tabPanels.length);
+    for (let i = 0; i < count; i++) {
+      const labelText = tabLinks[i].textContent.trim();
+      const panel = tabPanels[i];
+      const contentCell = [];
+      const panelHeadings = panel.querySelectorAll("h2, h3, h4");
+      panelHeadings.forEach((h) => contentCell.push(h.cloneNode(true)));
+      const panelDescriptions = panel.querySelectorAll(".field--name-field-description p, .simple-content p");
+      panelDescriptions.forEach((p) => {
+        if (p.textContent.trim()) contentCell.push(p.cloneNode(true));
+      });
+      const panelImages = panel.querySelectorAll(".field--name-field-image img, .field--name-field-p-media-item img");
+      panelImages.forEach((img) => contentCell.push(img.cloneNode(true)));
+      const panelLinks = panel.querySelectorAll("a.cta-link, .field--name-field-link a");
+      panelLinks.forEach((a) => contentCell.push(a.cloneNode(true)));
+      if (contentCell.length > 0) {
+        cells.push([labelText, contentCell]);
+      }
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "tabs-integrations",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
   // tools/importer/transformers/cvent-cleanup.js
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
@@ -409,8 +517,63 @@ var CustomImportScript = (() => {
     }
   }
 
-  // tools/importer/transformers/fragment-replacer.js
+  // tools/importer/transformers/cvent-sections.js
+  var TransformHook2 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform2(hookName, element, payload) {
+    if (hookName === TransformHook2.beforeTransform) {
+      const { document } = payload;
+      const sections = payload.template && payload.template.sections;
+      if (!sections || sections.length < 2) return;
+      const reversedSections = [...sections].reverse();
+      reversedSections.forEach((section) => {
+        const selectors = Array.isArray(section.selector) ? section.selector : [section.selector];
+        let sectionEl = null;
+        for (const sel of selectors) {
+          sectionEl = element.querySelector(sel);
+          if (sectionEl) break;
+        }
+        if (!sectionEl) return;
+        if (section.style) {
+          const metaBlock = WebImporter.Blocks.createBlock(document, {
+            name: "Section Metadata",
+            cells: { style: section.style }
+          });
+          sectionEl.after(metaBlock);
+        }
+        let firstSectionNode = sectionEl;
+        if (section.defaultContent && section.defaultContent.length > 0) {
+          const allDescendants = [...sectionEl.querySelectorAll("*")];
+          const midpoint = allDescendants.length / 2;
+          section.defaultContent.forEach((dcSelector) => {
+            const dcEl = element.querySelector(dcSelector);
+            if (!dcEl) {
+              console.warn(`Default content not found: ${dcSelector}`);
+              return;
+            }
+            if (!sectionEl.contains(dcEl)) return;
+            const dcIndex = allDescendants.indexOf(dcEl);
+            const isBefore = dcIndex >= 0 && dcIndex < midpoint;
+            if (isBefore) {
+              sectionEl.before(dcEl);
+              if (firstSectionNode === sectionEl) {
+                firstSectionNode = dcEl;
+              }
+            } else {
+              sectionEl.after(dcEl);
+            }
+          });
+        }
+        const isFirst = section.id === sections[0].id;
+        if (!isFirst) {
+          const hr = document.createElement("hr");
+          firstSectionNode.before(hr);
+        }
+      });
+    }
+  }
+
+  // tools/importer/transformers/fragment-replacer.js
+  function transform3(hookName, element, payload) {
     if (hookName !== "afterTransform") return;
     const { document } = payload;
     const fragments = payload.template && payload.template.fragments;
@@ -516,7 +679,10 @@ var CustomImportScript = (() => {
   // tools/importer/import-training-certification.js
   var parsers = {
     "hero-product-form": parse,
-    "columns-media": parse2
+    "columns-media": parse2,
+    "cards-feature": parse3,
+    "cards-quote": parse4,
+    "tabs-horizontal": parse5
   };
   var PAGE_TEMPLATE = {
     name: "training-certification",
@@ -533,6 +699,18 @@ var CustomImportScript = (() => {
       {
         name: "columns-media",
         instances: [".paragraph--type--compound-media-bar", ".paragraph--type--header-banner-media"]
+      },
+      {
+        name: "cards-feature",
+        instances: [".paragraph--type--layout-content.column-count-4"]
+      },
+      {
+        name: "cards-quote",
+        instances: [".paragraph--type--layout-content.column-count-2"]
+      },
+      {
+        name: "tabs-horizontal",
+        instances: [".paragraph--type--layout-tabs-h"]
       }
     ],
     fragments: [
@@ -542,7 +720,11 @@ var CustomImportScript = (() => {
       }
     ]
   };
-  var transformers = [transform, transform2];
+  var transformers = [
+    transform,
+    ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : [],
+    transform3
+  ];
   function executeTransformers(hookName, element, payload) {
     const enhancedPayload = { ...payload, template: PAGE_TEMPLATE };
     transformers.forEach((t) => {

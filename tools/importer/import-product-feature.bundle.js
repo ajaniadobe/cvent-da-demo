@@ -396,6 +396,121 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/accordion.js
+  function parse7(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const items = element.querySelectorAll(".accordion-item[data-accordion-item], .field__item.accordion-item");
+    items.forEach((item) => {
+      const titleEl = item.querySelector("a.accordion-title, .field--name-field-accordion-label");
+      const question = titleEl ? titleEl.textContent.trim() : "";
+      if (!question) return;
+      const contentEl = item.querySelector(".accordion-content .field--name-field-description");
+      const answerCell = [];
+      if (contentEl) {
+        [...contentEl.children].forEach((child) => {
+          answerCell.push(child.cloneNode(true));
+        });
+      }
+      if (answerCell.length === 0) {
+        const fallback = item.querySelector(".accordion-content");
+        if (fallback) {
+          const p = document.createElement("p");
+          p.textContent = fallback.textContent.trim();
+          answerCell.push(p);
+        }
+      }
+      cells.push([question, answerCell]);
+    });
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Accordion",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form.js
+  function parse8(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const contentWrap = element.querySelector(".field--name-field-p-content-item");
+    if (contentWrap) {
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img");
+      const frag = document.createDocumentFragment();
+      contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
+      element.before(frag);
+    }
+    const cells = [];
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h3") || element.querySelector(".field--name-field-p-sidebar-item h2") || element.querySelector("h3") || element.querySelector("h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      if (input.name === "cpt" || input.name === "honeypot") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.name && input.name.toLowerCase().includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.name && input.name.toLowerCase().includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      }
+      const isRequired = input.required || input.getAttribute("aria-required") === "true" || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---"));
+        row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
+    let submitText = submitBtn ? submitBtn.textContent.trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Request a demo";
+    cells.push([submitText]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
   // tools/importer/transformers/cvent-cleanup.js
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
@@ -628,15 +743,10 @@ var CustomImportScript = (() => {
       const link = document.createElement("a");
       link.href = path;
       link.textContent = path;
-      const block = WebImporter.Blocks.createBlock(document, {
-        name: "fragment",
-        cells: [[link]]
-      });
+      const block = WebImporter.Blocks.createBlock(document, { name: "fragment", cells: [[link]] });
       toReplace[0].replaceWith(block);
-      for (let i = 1; i < toReplace.length; i++) {
-        toReplace[i].remove();
-      }
-      console.log(`[fragment-replacer] Replaced with fragment: ${path}`);
+      for (let i = 1; i < toReplace.length; i++) toReplace[i].remove();
+      console.log("[fragment-replacer] Replaced with fragment: " + path);
     });
   }
   function normalizeBlockName(name) {
@@ -712,6 +822,14 @@ var CustomImportScript = (() => {
       }
       return [];
     }
+    if (match.sourceSelector) {
+      const candidates = root.querySelectorAll(match.sourceSelector);
+      for (const el of candidates) {
+        if (match.contentText && !el.textContent.includes(match.contentText)) continue;
+        return [el];
+      }
+      return [];
+    }
     return [];
   }
 
@@ -722,7 +840,9 @@ var CustomImportScript = (() => {
     "cards-gallery": parse3,
     "columns-media": parse4,
     "cards-testimonial": parse5,
-    "columns": parse6
+    "columns": parse6,
+    "accordion": parse7,
+    "form": parse8
   };
   var PAGE_TEMPLATE = {
     name: "product-feature",
@@ -772,6 +892,18 @@ var CustomImportScript = (() => {
         name: "columns",
         instances: [
           ".paragraph--type--layout-content.column-count-2"
+        ]
+      },
+      {
+        name: "accordion",
+        instances: [
+          ".paragraph--type--layout-accordion"
+        ]
+      },
+      {
+        name: "form",
+        instances: [
+          ".paragraph--type--compound-form"
         ]
       }
     ],

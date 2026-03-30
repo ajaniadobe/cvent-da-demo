@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -90,6 +73,84 @@ var CustomImportScript = (() => {
       });
       element.replaceWith(block);
     }
+  }
+
+  // tools/importer/parsers/form.js
+  function parse2(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const contentWrap = element.querySelector(".field--name-field-p-content-item");
+    if (contentWrap) {
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img");
+      const frag = document.createDocumentFragment();
+      contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
+      element.before(frag);
+    }
+    const cells = [];
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h3") || element.querySelector(".field--name-field-p-sidebar-item h2") || element.querySelector("h3") || element.querySelector("h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      if (input.name === "cpt" || input.name === "honeypot") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.name && input.name.toLowerCase().includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.name && input.name.toLowerCase().includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      }
+      const isRequired = input.required || input.getAttribute("aria-required") === "true" || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---"));
+        row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
+    let submitText = submitBtn ? submitBtn.textContent.trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Request a demo";
+    cells.push([submitText]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
+      cells
+    });
+    element.replaceWith(block);
   }
 
   // tools/importer/transformers/cvent-cleanup.js
@@ -278,10 +339,33 @@ var CustomImportScript = (() => {
           });
           sectionEl.after(metaBlock);
         }
+        let firstSectionNode = sectionEl;
+        if (section.defaultContent && section.defaultContent.length > 0) {
+          const allDescendants = [...sectionEl.querySelectorAll("*")];
+          const midpoint = allDescendants.length / 2;
+          section.defaultContent.forEach((dcSelector) => {
+            const dcEl = element.querySelector(dcSelector);
+            if (!dcEl) {
+              console.warn(`Default content not found: ${dcSelector}`);
+              return;
+            }
+            if (!sectionEl.contains(dcEl)) return;
+            const dcIndex = allDescendants.indexOf(dcEl);
+            const isBefore = dcIndex >= 0 && dcIndex < midpoint;
+            if (isBefore) {
+              sectionEl.before(dcEl);
+              if (firstSectionNode === sectionEl) {
+                firstSectionNode = dcEl;
+              }
+            } else {
+              sectionEl.after(dcEl);
+            }
+          });
+        }
         const isFirst = section.id === sections[0].id;
         if (!isFirst) {
           const hr = document.createElement("hr");
-          sectionEl.before(hr);
+          firstSectionNode.before(hr);
         }
       });
     }
@@ -289,7 +373,8 @@ var CustomImportScript = (() => {
 
   // tools/importer/import-resource-listing.js
   var parsers = {
-    "cards-resource": parse
+    "cards-resource": parse,
+    "form": parse2
   };
   var PAGE_TEMPLATE = {
     name: "resource-listing",
@@ -307,6 +392,12 @@ var CustomImportScript = (() => {
         instances: [
           ".paragraph--type--summary-resources",
           ".paragraph--type--reference-block.provider--views"
+        ]
+      },
+      {
+        name: "form",
+        instances: [
+          ".paragraph--type--compound-form"
         ]
       }
     ],
@@ -358,9 +449,10 @@ var CustomImportScript = (() => {
     ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
   ];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
+    const enhancedPayload = {
+      ...payload,
       template: PAGE_TEMPLATE
-    });
+    };
     transformers.forEach((transformerFn) => {
       try {
         transformerFn.call(null, hookName, element, enhancedPayload);
