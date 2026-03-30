@@ -532,11 +532,16 @@ main .section > .default-content > p:first-child:has(> a:only-child[href="/"]) {
 }
 
 /* logo wall — consecutive image-only paragraphs following an h2 in default content */
+.default-content:has(> h2 ~ p > img:only-child),
+.default-content:has(> h2 ~ p > picture:only-child) {
+  text-align: center;
+}
+
 .default-content > h2 ~ p:has(> picture:only-child),
 .default-content > h2 ~ p:has(> img:only-child),
 .default-content > h2 ~ p:has(> a:only-child img) {
   display: inline-block;
-  margin: 8px 12px;
+  margin: 16px 20px;
   vertical-align: middle;
 }
 
