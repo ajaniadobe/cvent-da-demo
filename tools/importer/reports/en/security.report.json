@@ -2,7 +2,7 @@
   "status": "success",
   "url": "https://www.cvent.com/en/security",
   "path": "en/security",
-  "timestamp": "2026-03-30T05:20:12.204Z",
+  "timestamp": "2026-03-30T05:49:14.067Z",
   "title": "Event Data Security for Customers | Cvent",
   "template": "company-info",
   "blocks": [
@@ -11,6 +11,7 @@
     "columns-media",
     "columns-media",
     "columns-media",
-    "columns-media"
+    "columns-media",
+    "logo-wall"
   ]
 }

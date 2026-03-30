@@ -181,6 +181,35 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/logo-wall.js
+  function parse2(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, h2");
+    if (heading) {
+      cells.push([heading.cloneNode(true)]);
+    }
+    const imgs = element.querySelectorAll("img");
+    const logoContainer = document.createElement("div");
+    let logoCount = 0;
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.includes("pixel") || src.includes("tracking")) return;
+      const p = document.createElement("p");
+      p.appendChild(img.cloneNode(true));
+      logoContainer.appendChild(p);
+      logoCount++;
+    });
+    if (logoCount > 0) {
+      cells.push([logoContainer]);
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "logo-wall",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
   // tools/importer/transformers/cvent-cleanup.js
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
@@ -505,7 +534,8 @@ var CustomImportScript = (() => {
 
   // tools/importer/import-company-info.js
   var parsers = {
-    "columns-media": parse
+    "columns-media": parse,
+    "logo-wall": parse2
   };
   var PAGE_TEMPLATE = {
     name: "company-info",
@@ -523,6 +553,12 @@ var CustomImportScript = (() => {
         instances: [
           ".paragraph--type--compound-media-bar",
           ".paragraph--type--header-banner-media"
+        ]
+      },
+      {
+        name: "logo-wall",
+        instances: [
+          ".paragraph--type--logo-bar"
         ]
       }
     ],

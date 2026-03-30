@@ -2,7 +2,7 @@
   "status": "success",
   "url": "https://www.cvent.com/en/company",
   "path": "en/company",
-  "timestamp": "2026-03-30T05:19:44.050Z",
+  "timestamp": "2026-03-30T05:49:05.527Z",
   "title": "Company Overview | Cvent",
   "template": "company-info",
   "blocks": [
@@ -14,6 +14,7 @@
     "columns-media",
     "columns-media",
     "columns-media",
-    "columns-media"
+    "columns-media",
+    "logo-wall"
   ]
 }

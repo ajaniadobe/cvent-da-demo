@@ -3,6 +3,7 @@
 
 // PARSER IMPORTS
 import columnsMediaParser from './parsers/columns-media.js';
+import logoWallParser from './parsers/logo-wall.js';
 
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
@@ -12,6 +13,7 @@ import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 // PARSER REGISTRY
 const parsers = {
   'columns-media': columnsMediaParser,
+  'logo-wall': logoWallParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION
@@ -31,6 +33,12 @@ const PAGE_TEMPLATE = {
       instances: [
         '.paragraph--type--compound-media-bar',
         '.paragraph--type--header-banner-media',
+      ],
+    },
+    {
+      name: 'logo-wall',
+      instances: [
+        '.paragraph--type--logo-bar',
       ],
     },
   ],
