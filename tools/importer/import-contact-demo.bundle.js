@@ -68,8 +68,31 @@ var CustomImportScript = (() => {
         sidebarCell.push(formHeading.cloneNode(true));
       }
       const form = sidebar.querySelector("form");
+      let hasRealFields = false;
       if (form) {
+        const inputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), select, textarea');
+        hasRealFields = inputs.length > 0;
+      }
+      if (hasRealFields) {
         sidebarCell.push(form.cloneNode(true));
+      } else {
+        const fields = [
+          "First name|text|*",
+          "Last name|text|*",
+          "Work email|email|*",
+          "Phone|tel|*",
+          "Organization|text|*",
+          "Job function|select|*|Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other",
+          "Country|select|*|Select Country, USA, Canada, United Kingdom, Germany, Australia"
+        ];
+        fields.forEach((f) => {
+          const p = document.createElement("p");
+          p.textContent = f;
+          sidebarCell.push(p);
+        });
+        const submitP = document.createElement("p");
+        submitP.textContent = formHeading ? "Submit" : "Request a demo";
+        sidebarCell.push(submitP);
       }
     }
     if (contentCell.length > 0 || sidebarCell.length > 0) {
@@ -118,6 +141,32 @@ var CustomImportScript = (() => {
       } else {
         cells.push([contentCol, mediaCol]);
       }
+      const block2 = WebImporter.Blocks.createBlock(document, {
+        name: "columns-media",
+        cells
+      });
+      element.replaceWith(block2);
+      return;
+    }
+    const bannerMedia = element.querySelector(".header-banner-media");
+    if (bannerMedia) {
+      const contentSide = bannerMedia.querySelector(".header-banner-media--content");
+      const mediaSide = bannerMedia.querySelector(".header-banner-media--media");
+      const contentCol = [];
+      const mediaCol = [];
+      if (contentSide) {
+        const wysiwyg = contentSide.querySelector(".field--name-field-wysiwyg");
+        const contentSource = wysiwyg || contentSide;
+        Array.from(contentSource.querySelectorAll("h1, h2, h3, h4, p, ul, ol, a")).forEach((el) => {
+          if (el.tagName === "A" && el.parentElement && el.parentElement.tagName === "P") return;
+          contentCol.push(el);
+        });
+      }
+      if (mediaSide) {
+        const pic = mediaSide.querySelector("picture, img");
+        if (pic) mediaCol.push(pic);
+      }
+      cells.push([contentCol, mediaCol]);
       const block2 = WebImporter.Blocks.createBlock(document, {
         name: "columns-media",
         cells
@@ -199,6 +248,152 @@ var CustomImportScript = (() => {
     element.replaceWith(block);
   }
 
+  // tools/importer/parsers/cards-testimonial.js
+  function parse3(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2");
+    if (heading) {
+      element.before(heading.cloneNode(true));
+    }
+    const cards = element.querySelectorAll(".paragraph--type--simple-card");
+    cards.forEach((card) => {
+      const imageCell = [];
+      const textCell = [];
+      const img = card.querySelector(".innerlink img");
+      if (img) {
+        imageCell.push(img.cloneNode(true));
+      }
+      const companyHeading = card.querySelector(".simple-card__content h4");
+      if (companyHeading) {
+        textCell.push(companyHeading.cloneNode(true));
+      }
+      const description = card.querySelector(".simple-card__content .field--name-field-description");
+      if (description) {
+        [...description.children].forEach((child) => {
+          textCell.push(child.cloneNode(true));
+        });
+      }
+      const ctaLink = card.querySelector(".field--name-field-p-link a");
+      if (ctaLink) {
+        textCell.push(ctaLink.cloneNode(true));
+      }
+      if (imageCell.length > 0 || textCell.length > 0) {
+        cells.push([imageCell, textCell]);
+      }
+    });
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "cards-testimonial",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/logo-wall.js
+  function parse4(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, h2");
+    if (heading) {
+      cells.push([heading.cloneNode(true)]);
+    }
+    const imgs = element.querySelectorAll("img");
+    const logoContainer = document.createElement("div");
+    let logoCount = 0;
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.includes("pixel") || src.includes("tracking")) return;
+      const p = document.createElement("p");
+      p.appendChild(img.cloneNode(true));
+      logoContainer.appendChild(p);
+      logoCount++;
+    });
+    if (logoCount > 0) {
+      cells.push([logoContainer]);
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "logo-wall",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form.js
+  function parse5(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const contentWrap = element.querySelector(".field--name-field-p-content-item");
+    if (contentWrap) {
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img, a");
+      const frag = document.createDocumentFragment();
+      contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
+      element.before(frag);
+    }
+    const cells = [];
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      if (input.name === "cpt" || input.name === "honeypot") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.name && input.name.toLowerCase().includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.name && input.name.toLowerCase().includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      }
+      const isRequired = input.required || input.getAttribute("aria-required") === "true" || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---"));
+        row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
+    const submitText = submitBtn ? submitBtn.textContent.trim() : "Contact us";
+    cells.push([submitText || "Contact us"]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
   // tools/importer/transformers/cvent-cleanup.js
   var TransformHook = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform(hookName, element, payload) {
@@ -251,6 +446,19 @@ var CustomImportScript = (() => {
           const text = el.textContent.trim();
           if (text === "Thanks for sharing!" || text === "\u2713" || text === "More\u2026") {
             el.remove();
+          }
+        }
+      });
+      element.querySelectorAll("a[href]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (href && (href.startsWith("https://www.cvent.com/") || href.startsWith("http://www.cvent.com/"))) {
+          try {
+            const url = new URL(href);
+            const path = url.pathname.replace(/\/$/, "") || "/";
+            if (path.startsWith("/en/") || path === "/en") {
+              a.setAttribute("href", path);
+            }
+          } catch (e) {
           }
         }
       });
@@ -349,10 +557,45 @@ var CustomImportScript = (() => {
     }
   }
 
+  // tools/importer/transformers/cvent-sections.js
+  var TransformHook2 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
+  function transform2(hookName, element, payload) {
+    if (hookName === TransformHook2.beforeTransform) {
+      const { document } = payload;
+      const sections = payload.template && payload.template.sections;
+      if (!sections || sections.length < 2) return;
+      const reversedSections = [...sections].reverse();
+      reversedSections.forEach((section) => {
+        const selectors = Array.isArray(section.selector) ? section.selector : [section.selector];
+        let sectionEl = null;
+        for (const sel of selectors) {
+          sectionEl = element.querySelector(sel);
+          if (sectionEl) break;
+        }
+        if (!sectionEl) return;
+        if (section.style) {
+          const metaBlock = WebImporter.Blocks.createBlock(document, {
+            name: "Section Metadata",
+            cells: { style: section.style }
+          });
+          sectionEl.after(metaBlock);
+        }
+        const isFirst = section.id === sections[0].id;
+        if (!isFirst) {
+          const hr = document.createElement("hr");
+          sectionEl.before(hr);
+        }
+      });
+    }
+  }
+
   // tools/importer/import-contact-demo.js
   var parsers = {
     "hero-product-form": parse,
-    "columns-media": parse2
+    "columns-media": parse2,
+    "cards-testimonial": parse3,
+    "logo-wall": parse4,
+    "form": parse5
   };
   var PAGE_TEMPLATE = {
     name: "contact-demo",
@@ -370,10 +613,75 @@ var CustomImportScript = (() => {
       {
         name: "columns-media",
         instances: [".paragraph--type--compound-media-bar", ".paragraph--type--header-banner-media"]
+      },
+      {
+        name: "cards-testimonial",
+        instances: [".paragraph--type--layout-content.column-count-3"]
+      },
+      {
+        name: "logo-wall",
+        instances: [".paragraph--type--logo-bar"]
+      },
+      {
+        name: "form",
+        instances: [".paragraph--type--compound-form"]
+      }
+    ],
+    sections: [
+      {
+        id: "section-1",
+        name: "Hero",
+        selector: ".paragraph--type--header-banner-modern-form",
+        style: null,
+        blocks: ["hero-product-form"],
+        defaultContent: []
+      },
+      {
+        id: "section-2",
+        name: "Testimonials",
+        selector: ".paragraph--type--layout-content.column-count-3",
+        style: "light-grey",
+        blocks: ["cards-testimonial"],
+        defaultContent: [".paragraph-header h2"]
+      },
+      {
+        id: "section-3",
+        name: "Logo Wall",
+        selector: ".paragraph--type--logo-bar",
+        style: null,
+        blocks: ["logo-wall"],
+        defaultContent: []
+      },
+      {
+        id: "section-4",
+        name: "CTA Banner",
+        selector: ".paragraph--type--banner-basic",
+        style: "blue-purple-gradient",
+        blocks: [],
+        defaultContent: [".banner-basic h3", ".banner-basic a"]
+      },
+      {
+        id: "section-5",
+        name: "Content Columns",
+        selector: ".paragraph--type--compound-media-bar",
+        style: null,
+        blocks: ["columns-media"],
+        defaultContent: []
+      },
+      {
+        id: "section-6",
+        name: "Form",
+        selector: ".paragraph--type--compound-form",
+        style: null,
+        blocks: ["form"],
+        defaultContent: []
       }
     ]
   };
-  var transformers = [transform];
+  var transformers = [
+    transform,
+    ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
+  ];
   function executeTransformers(hookName, element, payload) {
     const enhancedPayload = __spreadProps(__spreadValues({}, payload), { template: PAGE_TEMPLATE });
     transformers.forEach((t) => {

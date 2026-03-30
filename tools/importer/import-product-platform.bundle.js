@@ -68,8 +68,31 @@ var CustomImportScript = (() => {
         sidebarCell.push(formHeading.cloneNode(true));
       }
       const form = sidebar.querySelector("form");
+      let hasRealFields = false;
       if (form) {
+        const inputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), select, textarea');
+        hasRealFields = inputs.length > 0;
+      }
+      if (hasRealFields) {
         sidebarCell.push(form.cloneNode(true));
+      } else {
+        const fields = [
+          "First name|text|*",
+          "Last name|text|*",
+          "Work email|email|*",
+          "Phone|tel|*",
+          "Organization|text|*",
+          "Job function|select|*|Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other",
+          "Country|select|*|Select Country, USA, Canada, United Kingdom, Germany, Australia"
+        ];
+        fields.forEach((f) => {
+          const p = document.createElement("p");
+          p.textContent = f;
+          sidebarCell.push(p);
+        });
+        const submitP = document.createElement("p");
+        submitP.textContent = formHeading ? "Submit" : "Request a demo";
+        sidebarCell.push(submitP);
       }
     }
     if (contentCell.length > 0 || sidebarCell.length > 0) {
@@ -113,9 +136,10 @@ var CustomImportScript = (() => {
         const link = logo.querySelector("a");
         const img = logo.querySelector("img");
         if (img) {
-          if (link && link.href) {
+          const linkHref = link ? link.getAttribute("href") : "";
+          if (link && linkHref) {
             const a = document.createElement("a");
-            a.href = link.href;
+            a.setAttribute("href", linkHref);
             a.append(img.cloneNode(true));
             contentCell.push(a);
           } else {
@@ -512,6 +536,19 @@ var CustomImportScript = (() => {
           }
         }
       });
+      element.querySelectorAll("a[href]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (href && (href.startsWith("https://www.cvent.com/") || href.startsWith("http://www.cvent.com/"))) {
+          try {
+            const url = new URL(href);
+            const path = url.pathname.replace(/\/$/, "") || "/";
+            if (path.startsWith("/en/") || path === "/en") {
+              a.setAttribute("href", path);
+            }
+          } catch (e) {
+          }
+        }
+      });
     }
     if (hookName === TransformHook.afterTransform) {
       WebImporter.DOMUtils.remove(element, [
@@ -610,7 +647,7 @@ var CustomImportScript = (() => {
   // tools/importer/transformers/cvent-sections.js
   var TransformHook2 = { beforeTransform: "beforeTransform", afterTransform: "afterTransform" };
   function transform2(hookName, element, payload) {
-    if (hookName === TransformHook2.afterTransform) {
+    if (hookName === TransformHook2.beforeTransform) {
       const { document } = payload;
       const sections = payload.template && payload.template.sections;
       if (!sections || sections.length < 2) return;

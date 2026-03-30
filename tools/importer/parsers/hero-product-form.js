@@ -57,10 +57,37 @@ export default function parse(element, { document }) {
       sidebarCell.push(formHeading.cloneNode(true));
     }
 
-    // Get form element
+    // Try to extract real form fields
     const form = sidebar.querySelector('form');
+    let hasRealFields = false;
     if (form) {
+      const inputs = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]), select, textarea');
+      hasRealFields = inputs.length > 0;
+    }
+
+    if (hasRealFields) {
       sidebarCell.push(form.cloneNode(true));
+    } else {
+      // Marketo forms load via JS — generate fallback field definitions
+      // Format: "label|type|required|options" per paragraph, parsed by block JS
+      const fields = [
+        'First name|text|*',
+        'Last name|text|*',
+        'Work email|email|*',
+        'Phone|tel|*',
+        'Organization|text|*',
+        'Job function|select|*|Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other',
+        'Country|select|*|Select Country, USA, Canada, United Kingdom, Germany, Australia',
+      ];
+      fields.forEach((f) => {
+        const p = document.createElement('p');
+        p.textContent = f;
+        sidebarCell.push(p);
+      });
+      // Submit button as single-value paragraph
+      const submitP = document.createElement('p');
+      submitP.textContent = formHeading ? 'Submit' : 'Request a demo';
+      sidebarCell.push(submitP);
     }
   }
 

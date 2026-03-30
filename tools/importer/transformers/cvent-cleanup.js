@@ -88,6 +88,24 @@ export default function transform(hookName, element, payload) {
         }
       }
     });
+
+    // Rewrite internal cvent.com page links to relative paths
+    // Only convert /en/ content paths; leave asset URLs (PDFs, images) as absolute
+    element.querySelectorAll('a[href]').forEach((a) => {
+      const href = a.getAttribute('href');
+      if (href && (href.startsWith('https://www.cvent.com/') || href.startsWith('http://www.cvent.com/'))) {
+        try {
+          const url = new URL(href);
+          const path = url.pathname.replace(/\/$/, '') || '/';
+          // Only rewrite /en/ content pages, not CDN assets or non-content paths
+          if (path.startsWith('/en/') || path === '/en') {
+            a.setAttribute('href', path);
+          }
+        } catch (e) {
+          // skip malformed URLs
+        }
+      }
+    });
   }
   if (hookName === TransformHook.afterTransform) {
     // Remove non-authorable site chrome

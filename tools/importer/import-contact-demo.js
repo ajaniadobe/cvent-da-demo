@@ -1,13 +1,23 @@
 /* eslint-disable */
 /* global WebImporter */
 
+// PARSER IMPORTS
 import heroProductFormParser from './parsers/hero-product-form.js';
 import columnsMediaParser from './parsers/columns-media.js';
+import cardsTestimonialParser from './parsers/cards-testimonial.js';
+import logoWallParser from './parsers/logo-wall.js';
+import formParser from './parsers/form.js';
+
+// TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
+import cventSectionsTransformer from './transformers/cvent-sections.js';
 
 const parsers = {
   'hero-product-form': heroProductFormParser,
   'columns-media': columnsMediaParser,
+  'cards-testimonial': cardsTestimonialParser,
+  'logo-wall': logoWallParser,
+  'form': formParser,
 };
 
 const PAGE_TEMPLATE = {
@@ -27,10 +37,75 @@ const PAGE_TEMPLATE = {
       name: 'columns-media',
       instances: ['.paragraph--type--compound-media-bar', '.paragraph--type--header-banner-media'],
     },
+    {
+      name: 'cards-testimonial',
+      instances: ['.paragraph--type--layout-content.column-count-3'],
+    },
+    {
+      name: 'logo-wall',
+      instances: ['.paragraph--type--logo-bar'],
+    },
+    {
+      name: 'form',
+      instances: ['.paragraph--type--compound-form'],
+    },
+  ],
+  sections: [
+    {
+      id: 'section-1',
+      name: 'Hero',
+      selector: '.paragraph--type--header-banner-modern-form',
+      style: null,
+      blocks: ['hero-product-form'],
+      defaultContent: [],
+    },
+    {
+      id: 'section-2',
+      name: 'Testimonials',
+      selector: '.paragraph--type--layout-content.column-count-3',
+      style: 'light-grey',
+      blocks: ['cards-testimonial'],
+      defaultContent: ['.paragraph-header h2'],
+    },
+    {
+      id: 'section-3',
+      name: 'Logo Wall',
+      selector: '.paragraph--type--logo-bar',
+      style: null,
+      blocks: ['logo-wall'],
+      defaultContent: [],
+    },
+    {
+      id: 'section-4',
+      name: 'CTA Banner',
+      selector: '.paragraph--type--banner-basic',
+      style: 'blue-purple-gradient',
+      blocks: [],
+      defaultContent: ['.banner-basic h3', '.banner-basic a'],
+    },
+    {
+      id: 'section-5',
+      name: 'Content Columns',
+      selector: '.paragraph--type--compound-media-bar',
+      style: null,
+      blocks: ['columns-media'],
+      defaultContent: [],
+    },
+    {
+      id: 'section-6',
+      name: 'Form',
+      selector: '.paragraph--type--compound-form',
+      style: null,
+      blocks: ['form'],
+      defaultContent: [],
+    },
   ],
 };
 
-const transformers = [cventCleanupTransformer];
+const transformers = [
+  cventCleanupTransformer,
+  ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [cventSectionsTransformer] : []),
+];
 
 function executeTransformers(hookName, element, payload) {
   const enhancedPayload = { ...payload, template: PAGE_TEMPLATE };

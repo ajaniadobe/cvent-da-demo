@@ -34,7 +34,7 @@ export default function parse(element, { document }) {
 
     // Get link
     const link = card.querySelector('a.resource-card-link');
-    const href = link ? link.href : '';
+    const href = link ? (link.getAttribute('href') || '') : '';
 
     // Build content cell
     const contentCell = [];
@@ -53,7 +53,7 @@ export default function parse(element, { document }) {
 
     if (href) {
       const a = document.createElement('a');
-      a.href = href;
+      a.setAttribute('href', href);
       a.textContent = 'Read more';
       const p = document.createElement('p');
       p.append(a);

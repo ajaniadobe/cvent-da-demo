@@ -64,7 +64,7 @@ export default function parse(element, { document }) {
         if (link) {
           featureLi.append(document.createTextNode(' '));
           const a = document.createElement('a');
-          a.href = link.href;
+          a.setAttribute('href', link.getAttribute('href') || '');
           a.textContent = link.textContent.trim();
           featureLi.append(a);
         }

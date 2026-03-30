@@ -10,7 +10,7 @@
 const TransformHook = { beforeTransform: 'beforeTransform', afterTransform: 'afterTransform' };
 
 export default function transform(hookName, element, payload) {
-  if (hookName === TransformHook.afterTransform) {
+  if (hookName === TransformHook.beforeTransform) {
     const { document } = payload;
     const sections = payload.template && payload.template.sections;
     if (!sections || sections.length < 2) return;
