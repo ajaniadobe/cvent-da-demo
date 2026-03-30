@@ -311,6 +311,7 @@ var CustomImportScript = (() => {
       const featuresDiv = document.createElement("div");
       const accordionItems = quadrant.querySelectorAll(".accordion-item");
       accordionItems.forEach((item) => {
+        const featureName = item.querySelector(".inner-category span, .desktop-accordion-tab span");
         const listItems = item.querySelectorAll(".accordion-list li");
         listItems.forEach((li) => {
           const link = li.querySelector("a");
@@ -319,7 +320,7 @@ var CustomImportScript = (() => {
             const linkP = document.createElement("p");
             const a = document.createElement("a");
             a.setAttribute("href", link.getAttribute("href") || "");
-            a.textContent = link.textContent.trim();
+            a.textContent = featureName && featureName.textContent.trim() || link.textContent.trim();
             linkP.append(a);
             featuresDiv.append(linkP);
           }
@@ -341,8 +342,37 @@ var CustomImportScript = (() => {
     }
   }
 
-  // tools/importer/parsers/form.js
+  // tools/importer/parsers/logo-wall.js
   function parse6(element, { document }) {
+    const cells = [];
+    const heading = element.querySelector(".paragraph-header h2, h2");
+    if (heading) {
+      cells.push([heading.cloneNode(true)]);
+    }
+    const imgs = element.querySelectorAll("img");
+    const logoContainer = document.createElement("div");
+    let logoCount = 0;
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.includes("pixel") || src.includes("tracking")) return;
+      const p = document.createElement("p");
+      p.appendChild(img.cloneNode(true));
+      logoContainer.appendChild(p);
+      logoCount++;
+    });
+    if (logoCount > 0) {
+      cells.push([logoContainer]);
+    }
+    if (cells.length === 0) return;
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "logo-wall",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form.js
+  function parse7(element, { document }) {
     const form = element.querySelector("form");
     if (!form) return;
     const contentWrap = element.querySelector(".field--name-field-p-content-item");
@@ -668,6 +698,10 @@ var CustomImportScript = (() => {
         instances: ["#cvent-paragraph-layout_content-735846"]
       },
       {
+        name: "logo-wall",
+        instances: ["#cvent-paragraph-logo_bar-1542431"]
+      },
+      {
         name: "lifecycle-wheel",
         instances: ["#cvent-paragraph-reference_block-1267256"]
       },
@@ -680,7 +714,7 @@ var CustomImportScript = (() => {
       { id: "section-1", name: "Hero", selector: ".paragraph--type--header-banner-hero", style: "dark-blue", blocks: ["hero-homepage"], defaultContent: [] },
       { id: "section-2", name: "Meet CventIQ", selector: "#cvent-paragraph-compound_media_bar-1568076", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-3", name: "All-in-one Solution Stats", selector: "#cvent-paragraph-compound_media_bar-1458006", style: null, blocks: ["columns-media"], defaultContent: [] },
-      { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: [], defaultContent: ["#cvent-paragraph-logo_bar-1542431"] },
+      { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: ["logo-wall"], defaultContent: [] },
       { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: ["lifecycle-wheel"], defaultContent: ["#cvent-paragraph-reference_block-1267256 .wheel--optional-wysiwyg"] },
       { id: "section-6", name: "Product Cards Grid", selector: "#cvent-paragraph-layout_content-735741", style: null, blocks: ["cards-product"], defaultContent: ["#cvent-paragraph-layout_content-735741 .paragraph-header", "#cvent-paragraph-link_default-892976"] },
       { id: "section-7", name: "Venue Sourcing", selector: "#cvent-paragraph-compound_media_bar-619191", style: "blue-green-gradient", blocks: ["columns-media"], defaultContent: [] },
@@ -696,7 +730,8 @@ var CustomImportScript = (() => {
     "cards-product": parse3,
     "cards-news": parse4,
     "lifecycle-wheel": parse5,
-    "form": parse6
+    "logo-wall": parse6,
+    "form": parse7
   };
   function homepageContentFreshness(hookName, element) {
     if (hookName !== "beforeTransform") return;
@@ -719,6 +754,38 @@ var CustomImportScript = (() => {
         g2Img.src = "https://www.cvent.com/sites/default/files/styles/column_content_width/public/image/2026-03/G2%20Badges%20Spring%202026%20Large.png.webp?itok=mXPFonFP";
         g2Img.alt = "Three G2 awards for Users Love Us, Fall 2026 grid leader, and Easiest admin, all for Spring 2026.";
       }
+    }
+    const featureNames = {
+      "/en/event-management-software/cvent-integrations": "Integrations",
+      "/en/event-management-software/event-reporting": "Event & attendee insights",
+      "/en/event-marketing-management/online-survey-software": "Surveys",
+      "/en/event-marketing-management/lead-capture": "Lead management",
+      "/en/event-marketing-management/engagement-score": "Engagement scoring",
+      "/en/event-marketing-management/spend-workflow": "Meeting approval & budgeting",
+      "/en/event-marketing-management/cvent-supplier-network": "Venue sourcing",
+      "/en/event-marketing-management/vendor-marketplace": "Vendor sourcing",
+      "/en/event-management-software/passkey-room-block-management": "Room block & travel",
+      "/en/event-marketing-management/cvent-event-design-software": "Venue diagramming",
+      "/en/event-marketing-management/appointments": "Networking",
+      "/en/event-marketing-management/mobile-event-apps": "Event app",
+      "/en/event-marketing-management/onarrival-event-check-in-software": "Onsite check-in & badging",
+      "/en/event-marketing-management/virtual-event-platform": "Virtual experience",
+      "/en/event-marketing-management/webinar-platform": "Webinar",
+      "/event-marketing-management/event-registration-software": "Registration",
+      "/en/event-marketing-management/custom-event-websites": "Event website",
+      "/en/event-marketing-platform": "Marketing",
+      "/en/event-marketing-management/content-management": "Speaker management",
+      "/en/event-marketing-management/exhibitor-management": "Exhibitor management"
+    };
+    const wheelEl = element.querySelector("#cvent-paragraph-reference_block-1267256");
+    if (wheelEl) {
+      wheelEl.querySelectorAll(".accordion-list a").forEach((a) => {
+        const href = (a.getAttribute("href") || "").replace(/^https:\/\/www\.cvent\.com/, "").replace(/\s+$/, "");
+        const name = featureNames[href];
+        if (name && a.textContent.trim() === "Explore") {
+          a.textContent = name;
+        }
+      });
     }
   }
   var transformers = [

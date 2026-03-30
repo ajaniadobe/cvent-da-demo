@@ -7,6 +7,7 @@ import columnsMediaParser from './parsers/columns-media.js';
 import cardsProductParser from './parsers/cards-product.js';
 import cardsNewsParser from './parsers/cards-news.js';
 import lifecycleWheelParser from './parsers/lifecycle-wheel.js';
+import logoWallParser from './parsers/logo-wall.js';
 import formParser from './parsers/form.js';
 
 // TRANSFORMER IMPORTS
@@ -44,6 +45,10 @@ const PAGE_TEMPLATE = {
       instances: ['#cvent-paragraph-layout_content-735846'],
     },
     {
+      name: 'logo-wall',
+      instances: ['#cvent-paragraph-logo_bar-1542431'],
+    },
+    {
       name: 'lifecycle-wheel',
       instances: ['#cvent-paragraph-reference_block-1267256'],
     },
@@ -56,7 +61,7 @@ const PAGE_TEMPLATE = {
     { id: 'section-1', name: 'Hero', selector: '.paragraph--type--header-banner-hero', style: 'dark-blue', blocks: ['hero-homepage'], defaultContent: [] },
     { id: 'section-2', name: 'Meet CventIQ', selector: '#cvent-paragraph-compound_media_bar-1568076', style: 'blue-purple-gradient', blocks: ['columns-media'], defaultContent: [] },
     { id: 'section-3', name: 'All-in-one Solution Stats', selector: '#cvent-paragraph-compound_media_bar-1458006', style: null, blocks: ['columns-media'], defaultContent: [] },
-    { id: 'section-4', name: 'Trusted By Logo Bar', selector: '#cvent-paragraph-logo_bar-1542431', style: null, blocks: [], defaultContent: ['#cvent-paragraph-logo_bar-1542431'] },
+    { id: 'section-4', name: 'Trusted By Logo Bar', selector: '#cvent-paragraph-logo_bar-1542431', style: null, blocks: ['logo-wall'], defaultContent: [] },
     { id: 'section-5', name: 'Event Lifecycle Wheel', selector: '#cvent-paragraph-reference_block-1267256', style: null, blocks: ['lifecycle-wheel'], defaultContent: ['#cvent-paragraph-reference_block-1267256 .wheel--optional-wysiwyg'] },
     { id: 'section-6', name: 'Product Cards Grid', selector: '#cvent-paragraph-layout_content-735741', style: null, blocks: ['cards-product'], defaultContent: ['#cvent-paragraph-layout_content-735741 .paragraph-header', '#cvent-paragraph-link_default-892976'] },
     { id: 'section-7', name: 'Venue Sourcing', selector: '#cvent-paragraph-compound_media_bar-619191', style: 'blue-green-gradient', blocks: ['columns-media'], defaultContent: [] },
@@ -74,6 +79,7 @@ const parsers = {
   'cards-product': cardsProductParser,
   'cards-news': cardsNewsParser,
   'lifecycle-wheel': lifecycleWheelParser,
+  'logo-wall': logoWallParser,
   'form': formParser,
 };
 
@@ -107,6 +113,42 @@ function homepageContentFreshness(hookName, element) {
       g2Img.src = 'https://www.cvent.com/sites/default/files/styles/column_content_width/public/image/2026-03/G2%20Badges%20Spring%202026%20Large.png.webp?itok=mXPFonFP';
       g2Img.alt = 'Three G2 awards for Users Love Us, Fall 2026 grid leader, and Easiest admin, all for Spring 2026.';
     }
+  }
+
+  // Lifecycle wheel: accordion link text is generic "Explore" in server HTML;
+  // JS renders feature names in .inner-category spans that the scraper misses.
+  // Map each product URL to its proper feature name.
+  const featureNames = {
+    '/en/event-management-software/cvent-integrations': 'Integrations',
+    '/en/event-management-software/event-reporting': 'Event & attendee insights',
+    '/en/event-marketing-management/online-survey-software': 'Surveys',
+    '/en/event-marketing-management/lead-capture': 'Lead management',
+    '/en/event-marketing-management/engagement-score': 'Engagement scoring',
+    '/en/event-marketing-management/spend-workflow': 'Meeting approval & budgeting',
+    '/en/event-marketing-management/cvent-supplier-network': 'Venue sourcing',
+    '/en/event-marketing-management/vendor-marketplace': 'Vendor sourcing',
+    '/en/event-management-software/passkey-room-block-management': 'Room block & travel',
+    '/en/event-marketing-management/cvent-event-design-software': 'Venue diagramming',
+    '/en/event-marketing-management/appointments': 'Networking',
+    '/en/event-marketing-management/mobile-event-apps': 'Event app',
+    '/en/event-marketing-management/onarrival-event-check-in-software': 'Onsite check-in & badging',
+    '/en/event-marketing-management/virtual-event-platform': 'Virtual experience',
+    '/en/event-marketing-management/webinar-platform': 'Webinar',
+    '/event-marketing-management/event-registration-software': 'Registration',
+    '/en/event-marketing-management/custom-event-websites': 'Event website',
+    '/en/event-marketing-platform': 'Marketing',
+    '/en/event-marketing-management/content-management': 'Speaker management',
+    '/en/event-marketing-management/exhibitor-management': 'Exhibitor management',
+  };
+  const wheelEl = element.querySelector('#cvent-paragraph-reference_block-1267256');
+  if (wheelEl) {
+    wheelEl.querySelectorAll('.accordion-list a').forEach((a) => {
+      const href = (a.getAttribute('href') || '').replace(/^https:\/\/www\.cvent\.com/, '').replace(/\s+$/, '');
+      const name = featureNames[href];
+      if (name && a.textContent.trim() === 'Explore') {
+        a.textContent = name;
+      }
+    });
   }
 }
 
