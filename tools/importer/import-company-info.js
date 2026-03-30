@@ -7,6 +7,7 @@ import columnsMediaParser from './parsers/columns-media.js';
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
 import cventSectionsTransformer from './transformers/cvent-sections.js';
+import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 
 // PARSER REGISTRY
 const parsers = {
@@ -51,12 +52,19 @@ const PAGE_TEMPLATE = {
       defaultContent: [],
     },
   ],
+  fragments: [
+    {
+      path: '/content/fragments/why-cvent-social-proof',
+      match: { sourceSelector: '.paragraph--type--compound-content-bar', contentText: '24/7 support' },
+    },
+  ],
 };
 
 // TRANSFORMER REGISTRY
 const transformers = [
   cventCleanupTransformer,
   ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [cventSectionsTransformer] : []),
+  fragmentReplacerTransformer,
 ];
 
 function executeTransformers(hookName, element, payload) {

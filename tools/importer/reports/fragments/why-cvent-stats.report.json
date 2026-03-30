@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/event-marketing-management/cvent-essentials",
+  "path": "fragments/why-cvent-stats",
+  "timestamp": "2026-03-30T05:09:21.877Z",
+  "title": "Fragment: why-cvent-stats",
+  "template": "fragment",
+  "blocks": [
+    "stats"
+  ]
+}

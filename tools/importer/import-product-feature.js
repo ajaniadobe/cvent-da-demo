@@ -12,6 +12,7 @@ import columnsParser from './parsers/columns.js';
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
 import cventSectionsTransformer from './transformers/cvent-sections.js';
+import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 
 // PARSER REGISTRY
 const parsers = {
@@ -153,8 +154,14 @@ const PAGE_TEMPLATE = {
       name: 'Why Cvent',
       selector: '.paragraph--type--compound-content-bar',
       style: null,
-      blocks: [],
+      blocks: ['columns-media'],
       defaultContent: ['.compound-content-bar h2', '.compound-content-bar .stat-item'],
+    },
+  ],
+  fragments: [
+    {
+      path: '/content/fragments/why-cvent-stats',
+      match: { blockClass: 'columns-media', contentText: '24/7 support' },
     },
   ],
 };
@@ -163,6 +170,7 @@ const PAGE_TEMPLATE = {
 const transformers = [
   cventCleanupTransformer,
   ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [cventSectionsTransformer] : []),
+  fragmentReplacerTransformer,
 ];
 
 /**
