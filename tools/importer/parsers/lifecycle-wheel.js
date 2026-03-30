@@ -41,38 +41,32 @@ export default function parse(element, { document }) {
 
     const tagline = taglines[name] || '';
 
-    // Extract features from accordion items
-    const featuresList = document.createElement('ul');
+    // Extract features from accordion items as <p><a>…</p><p>desc</p> pairs
+    // (the lifecycle-wheel block decorator expects this format)
+    const featuresDiv = document.createElement('div');
     const accordionItems = quadrant.querySelectorAll('.accordion-item');
     accordionItems.forEach((item) => {
-      const tabBtn = item.querySelector('.desktop-accordion-tab span');
-      const featureName = tabBtn ? tabBtn.textContent.trim() : '';
       const listItems = item.querySelectorAll('.accordion-list li');
       listItems.forEach((li) => {
-        const desc = li.querySelector('p');
         const link = li.querySelector('a');
-        const featureLi = document.createElement('li');
-        if (featureName) {
-          const strong = document.createElement('strong');
-          strong.textContent = featureName;
-          featureLi.append(strong);
-        }
-        if (desc) {
-          featureLi.append(document.createTextNode(': '));
-          featureLi.append(document.createTextNode(desc.textContent.trim()));
-        }
+        const desc = li.querySelector('p');
         if (link) {
-          featureLi.append(document.createTextNode(' '));
+          const linkP = document.createElement('p');
           const a = document.createElement('a');
           a.setAttribute('href', link.getAttribute('href') || '');
           a.textContent = link.textContent.trim();
-          featureLi.append(a);
+          linkP.append(a);
+          featuresDiv.append(linkP);
         }
-        featuresList.append(featureLi);
+        if (desc) {
+          const descP = document.createElement('p');
+          descP.textContent = desc.textContent.trim();
+          featuresDiv.append(descP);
+        }
       });
     });
 
-    cells.push([name, tagline, featuresList]);
+    cells.push([name, tagline, featuresDiv]);
   });
 
   if (cells.length > 0) {

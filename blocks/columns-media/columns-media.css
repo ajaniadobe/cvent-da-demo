@@ -404,3 +404,40 @@
   z-index: 1;
   line-height: 1;
 }
+
+/* -------------------------------------------------------
+   Stats number styling (e.g. 7M+, 315M+, 1K+, 24/7)
+   ------------------------------------------------------- */
+.columns-media > div > div p:has(> strong:only-child) {
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+.columns-media > div > div p:has(> strong:only-child) strong {
+  font-weight: 600;
+  color: var(--color-dark-blue);
+}
+
+.columns-media > div > div p:has(> strong:only-child) + p:not(:has(strong)) {
+  font-size: var(--body-font-size-m);
+  color: var(--color-dark-blue);
+  margin-bottom: 32px;
+}
+
+/* Desktop: 2x2 grid when text column has stat numbers.
+   Column-first flow so stat pairs (number+desc) stack vertically,
+   matching the original 2-col layout: 7M+/events | 315M+/registrations */
+@media (width >= 900px) {
+  .columns-media > div > div:has(p > strong:only-child) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto repeat(4, auto);
+    grid-auto-flow: column;
+    gap: 0 48px;
+  }
+
+  .columns-media > div > div:has(p > strong:only-child) h2 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+}

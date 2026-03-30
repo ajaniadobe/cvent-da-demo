@@ -60,6 +60,30 @@ var CustomImportScript = (() => {
     if (contentCell.length > 0) {
       cells.push(contentCell);
     }
+    const parent = element.closest(".paragraph--type--header-banner-hero") || element.parentElement;
+    const notifCard = parent ? parent.querySelector(".header-banner-hero-horizontal-notification-card") : null;
+    if (notifCard) {
+      const notifContent = [];
+      const notifText = notifCard.querySelector(".field--name-field-description, .text-formatted, p");
+      const notifLink = notifCard.querySelector("a");
+      if (notifText) {
+        const p = document.createElement("p");
+        p.textContent = notifText.textContent.trim();
+        notifContent.push(p);
+      }
+      if (notifLink) {
+        const p = document.createElement("p");
+        const a = document.createElement("a");
+        a.setAttribute("href", notifLink.getAttribute("href") || "");
+        a.textContent = notifLink.textContent.trim();
+        p.append(a);
+        notifContent.push(p);
+      }
+      if (notifContent.length > 0) {
+        cells.push(notifContent);
+      }
+      notifCard.remove();
+    }
     const block = WebImporter.Blocks.createBlock(document, {
       name: "hero-homepage",
       cells
@@ -96,6 +120,21 @@ var CustomImportScript = (() => {
             contentCol.push(el);
           });
         }
+        const statItems = contentSource.querySelectorAll(".paragraph--type--simple-stat");
+        statItems.forEach((stat) => {
+          const numEl = stat.querySelector(".field--name-field-stat");
+          const descEl = stat.querySelector(".field--name-field-description p");
+          if (numEl) {
+            const p = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = numEl.textContent.trim();
+            p.append(strong);
+            contentCol.push(p);
+          }
+          if (descEl) {
+            contentCol.push(descEl);
+          }
+        });
       }
       const isMediaFirst = element.classList.contains("media-position-left") || element.classList.contains("media-order-first");
       if (isMediaFirst) {
@@ -258,6 +297,139 @@ var CustomImportScript = (() => {
     });
     const block = WebImporter.Blocks.createBlock(document, {
       name: "cards-news",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/lifecycle-wheel.js
+  function parse5(element, { document }) {
+    const cells = [];
+    const quadrants = element.querySelectorAll(".desktop-spoke-container");
+    const taglines = {};
+    const mobileContainer = element.querySelector(".mobile-spoke-container");
+    if (mobileContainer) {
+      const outerTabs = mobileContainer.querySelectorAll(".outer-tab");
+      outerTabs.forEach((tab) => {
+        const name = tab.textContent.trim();
+        taglines[name] = "";
+      });
+    }
+    const centerDesc = element.querySelector(".wheel-product-desc");
+    const centerName = element.querySelector(".wheel-center-content h3");
+    if (centerName && centerDesc) {
+      taglines[centerName.textContent.trim()] = centerDesc.textContent.trim();
+    }
+    quadrants.forEach((quadrant) => {
+      const quadrantId = quadrant.id || "";
+      const name = quadrantId.replace("quadrant-", "");
+      if (!name) return;
+      const tagline = taglines[name] || "";
+      const featuresDiv = document.createElement("div");
+      const accordionItems = quadrant.querySelectorAll(".accordion-item");
+      accordionItems.forEach((item) => {
+        const listItems = item.querySelectorAll(".accordion-list li");
+        listItems.forEach((li) => {
+          const link = li.querySelector("a");
+          const desc = li.querySelector("p");
+          if (link) {
+            const linkP = document.createElement("p");
+            const a = document.createElement("a");
+            a.setAttribute("href", link.getAttribute("href") || "");
+            a.textContent = link.textContent.trim();
+            linkP.append(a);
+            featuresDiv.append(linkP);
+          }
+          if (desc) {
+            const descP = document.createElement("p");
+            descP.textContent = desc.textContent.trim();
+            featuresDiv.append(descP);
+          }
+        });
+      });
+      cells.push([name, tagline, featuresDiv]);
+    });
+    if (cells.length > 0) {
+      const block = WebImporter.Blocks.createBlock(document, {
+        name: "lifecycle-wheel",
+        cells
+      });
+      element.replaceWith(block);
+    }
+  }
+
+  // tools/importer/parsers/form.js
+  function parse6(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const contentWrap = element.querySelector(".field--name-field-p-content-item");
+    if (contentWrap) {
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img, a");
+      const frag = document.createDocumentFragment();
+      contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
+      element.before(frag);
+    }
+    const cells = [];
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      if (input.name === "cpt" || input.name === "honeypot") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.name && input.name.toLowerCase().includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.name && input.name.toLowerCase().includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      }
+      const isRequired = input.required || input.getAttribute("aria-required") === "true" || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---"));
+        row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
+    const submitText = submitBtn ? submitBtn.textContent.trim() : "Contact us";
+    cells.push([submitText || "Contact us"]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
       cells
     });
     element.replaceWith(block);
@@ -477,8 +649,7 @@ var CustomImportScript = (() => {
           "#cvent-paragraph-compound_media_bar-1458006",
           "#cvent-paragraph-compound_media_bar-619191",
           "#cvent-paragraph-compound_content_bar-1200576",
-          "#cvent-paragraph-compound_media_bar-1461776",
-          "#cvent-paragraph-compound_form-21226"
+          "#cvent-paragraph-compound_media_bar-1461776"
         ]
       },
       {
@@ -488,27 +659,37 @@ var CustomImportScript = (() => {
       {
         name: "cards-news",
         instances: ["#cvent-paragraph-layout_content-735846"]
+      },
+      {
+        name: "lifecycle-wheel",
+        instances: ["#cvent-paragraph-reference_block-1267256"]
+      },
+      {
+        name: "form",
+        instances: ["#cvent-paragraph-compound_form-21226"]
       }
     ],
     sections: [
-      { id: "section-1", name: "Hero", selector: ".paragraph--type--header-banner-hero", style: "dark-blue", blocks: ["hero-homepage"], defaultContent: [".header-banner-hero-horizontal-notification-card"] },
+      { id: "section-1", name: "Hero", selector: ".paragraph--type--header-banner-hero", style: "dark-blue", blocks: ["hero-homepage"], defaultContent: [] },
       { id: "section-2", name: "Meet CventIQ", selector: "#cvent-paragraph-compound_media_bar-1568076", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-3", name: "All-in-one Solution Stats", selector: "#cvent-paragraph-compound_media_bar-1458006", style: null, blocks: ["columns-media"], defaultContent: [] },
       { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: [], defaultContent: ["#cvent-paragraph-logo_bar-1542431"] },
-      { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: [], defaultContent: ["#cvent-paragraph-reference_block-1267256"] },
+      { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: ["lifecycle-wheel"], defaultContent: [] },
       { id: "section-6", name: "Product Cards Grid", selector: "#cvent-paragraph-layout_content-735741", style: null, blocks: ["cards-product"], defaultContent: [".paragraph--type--layout-content.column-count-3 > .layout-content-header", "#cvent-paragraph-link_default-892976"] },
       { id: "section-7", name: "Venue Sourcing", selector: "#cvent-paragraph-compound_media_bar-619191", style: "blue-green-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-8", name: "Social Proof", selector: "#cvent-paragraph-compound_content_bar-1200576", style: null, blocks: ["columns-media"], defaultContent: ["#join-thousands-of-planners-and-marketers-who-love-our-software"] },
       { id: "section-9", name: "CTA How It Works", selector: "#cvent-paragraph-compound_media_bar-1461776", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-10", name: "Whats New at Cvent", selector: "#cvent-paragraph-layout_content-735846", style: "light-grey", blocks: ["cards-news"], defaultContent: ["#whats-new-at-cvent"] },
-      { id: "section-11", name: "Platform CTA with Form", selector: "#cvent-paragraph-compound_form-21226", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] }
+      { id: "section-11", name: "Platform CTA with Form", selector: "#cvent-paragraph-compound_form-21226", style: "blue-purple-gradient", blocks: ["form"], defaultContent: [] }
     ]
   };
   var parsers = {
     "hero-homepage": parse,
     "columns-media": parse2,
     "cards-product": parse3,
-    "cards-news": parse4
+    "cards-news": parse4,
+    "lifecycle-wheel": parse5,
+    "form": parse6
   };
   var transformers = [
     transform,

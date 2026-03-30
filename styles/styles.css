@@ -371,11 +371,14 @@ main > .section.dark-blue {
       color: var(--color-dark-blue);
     }
   }
+
 }
 
 main > .section.blue-purple-gradient {
   background: var(--gradient-blue-purple);
   color: var(--color-light);
+  position: relative;
+  overflow: hidden;
 
   h1, h2, h3, h4, h5, h6 { color: var(--color-light); }
 
@@ -399,6 +402,31 @@ main > .section.blue-purple-gradient {
       background-color: var(--color-footer-text);
       border-color: var(--color-footer-text);
     }
+  }
+
+  /* decorative background circles (approximates original SVG decorations) */
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &::before {
+    width: 300px;
+    height: 300px;
+    top: -80px;
+    left: -60px;
+    background: radial-gradient(circle, rgb(255 255 255 / 12%) 0%, transparent 70%);
+  }
+
+  &::after {
+    width: 400px;
+    height: 400px;
+    bottom: -120px;
+    right: -80px;
+    background: radial-gradient(circle, rgb(255 255 255 / 8%) 0%, transparent 70%);
   }
 }
 
@@ -532,11 +560,16 @@ main .section > .default-content > p:first-child:has(> a:only-child[href="/"]) {
 }
 
 /* logo wall — consecutive image-only paragraphs following an h2 in default content */
+.default-content:has(> h2 ~ p > img:only-child),
+.default-content:has(> h2 ~ p > picture:only-child) {
+  text-align: center;
+}
+
 .default-content > h2 ~ p:has(> picture:only-child),
 .default-content > h2 ~ p:has(> img:only-child),
 .default-content > h2 ~ p:has(> a:only-child img) {
   display: inline-block;
-  margin: 8px 12px;
+  margin: 16px 20px;
   vertical-align: middle;
 }
 
