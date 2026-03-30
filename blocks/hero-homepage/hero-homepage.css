@@ -199,7 +199,7 @@
 /* hero bottom wrapper — SVG curve + notification card */
 .hero-bottom-wrapper {
   position: relative;
-  margin: 0 15px;
+  margin: 0 25px;
   padding-bottom: 48px;
   z-index: 2;
 }
