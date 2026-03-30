@@ -27,7 +27,8 @@ export default function parse(element, { document }) {
   // Extract any content column as default content before the block
   const contentWrap = element.querySelector('.field--name-field-p-content-item');
   if (contentWrap) {
-    const contentEls = contentWrap.querySelectorAll('h2, h3, h4, p, ul, ol, img, a');
+    // Don't include 'a' — links inside <p> are already captured by the p selector
+    const contentEls = contentWrap.querySelectorAll('h2, h3, h4, p, ul, ol, img');
     const frag = document.createDocumentFragment();
     contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
     element.before(frag);
@@ -35,8 +36,11 @@ export default function parse(element, { document }) {
 
   const cells = [];
 
-  // Row 0: Form heading
-  const heading = element.querySelector('.field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2');
+  // Row 0: Form heading — prioritize sidebar heading over section heading
+  const heading = element.querySelector('.field--name-field-p-sidebar-item h3')
+    || element.querySelector('.field--name-field-p-sidebar-item h2')
+    || element.querySelector('h3')
+    || element.querySelector('h2');
   const headingText = heading ? heading.textContent.trim() : 'Contact Us';
   cells.push([headingText]);
 
@@ -118,8 +122,11 @@ export default function parse(element, { document }) {
 
   // Submit button row (single cell)
   const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
-  const submitText = submitBtn ? submitBtn.textContent.trim() : 'Contact us';
-  cells.push([submitText || 'Contact us']);
+  let submitText = submitBtn ? submitBtn.textContent.trim() : '';
+  // Marketo buttons default to "Submit" before JS updates the text;
+  // fall back to a contextual CTA
+  if (!submitText || submitText === 'Submit') submitText = 'Request a demo';
+  cells.push([submitText]);
 
   const block = WebImporter.Blocks.createBlock(document, {
     name: 'Form',

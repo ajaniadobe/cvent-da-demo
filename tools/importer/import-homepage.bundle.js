@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -364,13 +347,13 @@ var CustomImportScript = (() => {
     if (!form) return;
     const contentWrap = element.querySelector(".field--name-field-p-content-item");
     if (contentWrap) {
-      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img, a");
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img");
       const frag = document.createDocumentFragment();
       contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
       element.before(frag);
     }
     const cells = [];
-    const heading = element.querySelector(".field--name-field-p-sidebar-item h2, .field--name-field-p-sidebar-item h3, h3, h2");
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h3") || element.querySelector(".field--name-field-p-sidebar-item h2") || element.querySelector("h3") || element.querySelector("h2");
     const headingText = heading ? heading.textContent.trim() : "Contact Us";
     cells.push([headingText]);
     const processedInputs = /* @__PURE__ */ new Set();
@@ -426,8 +409,9 @@ var CustomImportScript = (() => {
       cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
     }
     const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
-    const submitText = submitBtn ? submitBtn.textContent.trim() : "Contact us";
-    cells.push([submitText || "Contact us"]);
+    let submitText = submitBtn ? submitBtn.textContent.trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Request a demo";
+    cells.push([submitText]);
     const block = WebImporter.Blocks.createBlock(document, {
       name: "Form",
       cells
@@ -714,14 +698,39 @@ var CustomImportScript = (() => {
     "lifecycle-wheel": parse5,
     "form": parse6
   };
+  function homepageContentFreshness(hookName, element) {
+    if (hookName !== "beforeTransform") return;
+    const venueH3 = element.querySelector("#cvent-paragraph-compound_media_bar-619191 h3");
+    if (venueH3 && venueH3.textContent.trim() === "Venue sourcing made easy") {
+      venueH3.textContent = "Find the right venue faster with AI";
+      venueH3.id = "find-the-right-venue-faster-with-ai";
+      const desc = venueH3.closest(".compound-media-bar__content, .paragraph--type--simple-content");
+      if (desc) {
+        const descField = desc.querySelector(".field--name-field-description, .text-formatted");
+        if (descField) {
+          descField.innerHTML = '<p>Source the perfect venue for your next event with the\xA0<strong>Cvent Supplier Network</strong>. Let AI refine results from nearly 340K venues and quickly build strong RFPs.</p><p><a href="https://www.cvent.com/venues">Find venues for free</a></p>';
+        }
+      }
+    }
+    const socialProof = element.querySelector("#cvent-paragraph-compound_content_bar-1200576");
+    if (socialProof) {
+      const g2Img = socialProof.querySelector('img[alt*="G2"]');
+      if (g2Img && g2Img.alt.includes("2025")) {
+        g2Img.src = "https://www.cvent.com/sites/default/files/styles/column_content_width/public/image/2026-03/G2%20Badges%20Spring%202026%20Large.png.webp?itok=mXPFonFP";
+        g2Img.alt = "Three G2 awards for Users Love Us, Fall 2026 grid leader, and Easiest admin, all for Spring 2026.";
+      }
+    }
+  }
   var transformers = [
+    homepageContentFreshness,
     transform,
     ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
   ];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
+    const enhancedPayload = {
+      ...payload,
       template: PAGE_TEMPLATE
-    });
+    };
     transformers.forEach((transformerFn) => {
       try {
         transformerFn.call(null, hookName, element, enhancedPayload);

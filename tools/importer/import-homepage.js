@@ -77,8 +77,42 @@ const parsers = {
   'form': formParser,
 };
 
+/**
+ * Homepage content freshness transformer.
+ * Fixes elements whose server-rendered HTML is stale because JS updates
+ * them via lazy-load / intersection observer after the scraper captures the DOM.
+ */
+function homepageContentFreshness(hookName, element) {
+  if (hookName !== 'beforeTransform') return;
+
+  // Venue sourcing: heading and description updated on live site
+  const venueH3 = element.querySelector('#cvent-paragraph-compound_media_bar-619191 h3');
+  if (venueH3 && venueH3.textContent.trim() === 'Venue sourcing made easy') {
+    venueH3.textContent = 'Find the right venue faster with AI';
+    venueH3.id = 'find-the-right-venue-faster-with-ai';
+    const desc = venueH3.closest('.compound-media-bar__content, .paragraph--type--simple-content');
+    if (desc) {
+      const descField = desc.querySelector('.field--name-field-description, .text-formatted');
+      if (descField) {
+        descField.innerHTML = '<p>Source the perfect venue for your next event with the\u00a0<strong>Cvent Supplier Network</strong>. Let AI refine results from nearly 340K venues and quickly build strong RFPs.</p><p><a href="https://www.cvent.com/venues">Find venues for free</a></p>';
+      }
+    }
+  }
+
+  // G2 badges: image updated to Spring 2026
+  const socialProof = element.querySelector('#cvent-paragraph-compound_content_bar-1200576');
+  if (socialProof) {
+    const g2Img = socialProof.querySelector('img[alt*="G2"]');
+    if (g2Img && g2Img.alt.includes('2025')) {
+      g2Img.src = 'https://www.cvent.com/sites/default/files/styles/column_content_width/public/image/2026-03/G2%20Badges%20Spring%202026%20Large.png.webp?itok=mXPFonFP';
+      g2Img.alt = 'Three G2 awards for Users Love Us, Fall 2026 grid leader, and Easiest admin, all for Spring 2026.';
+    }
+  }
+}
+
 // TRANSFORMER REGISTRY
 const transformers = [
+  homepageContentFreshness,
   cventCleanupTransformer,
   ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [cventSectionsTransformer] : []),
 ];
