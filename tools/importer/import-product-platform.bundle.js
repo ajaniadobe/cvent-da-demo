@@ -136,9 +136,10 @@ var CustomImportScript = (() => {
         const link = logo.querySelector("a");
         const img = logo.querySelector("img");
         if (img) {
-          if (link && link.href) {
+          const linkHref = link ? link.getAttribute("href") : "";
+          if (link && linkHref) {
             const a = document.createElement("a");
-            a.href = link.href;
+            a.setAttribute("href", linkHref);
             a.append(img.cloneNode(true));
             contentCell.push(a);
           } else {
@@ -532,6 +533,19 @@ var CustomImportScript = (() => {
           const text = el.textContent.trim();
           if (text === "Thanks for sharing!" || text === "\u2713" || text === "More\u2026") {
             el.remove();
+          }
+        }
+      });
+      element.querySelectorAll("a[href]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (href && (href.startsWith("https://www.cvent.com/") || href.startsWith("http://www.cvent.com/"))) {
+          try {
+            const url = new URL(href);
+            const path = url.pathname.replace(/\/$/, "") || "/";
+            if (path.startsWith("/en/") || path === "/en") {
+              a.setAttribute("href", path);
+            }
+          } catch (e) {
           }
         }
       });

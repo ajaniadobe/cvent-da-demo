@@ -150,7 +150,7 @@ var CustomImportScript = (() => {
           if (link) {
             featureLi.append(document.createTextNode(" "));
             const a = document.createElement("a");
-            a.href = link.href;
+            a.setAttribute("href", link.getAttribute("href") || "");
             a.textContent = link.textContent.trim();
             featureLi.append(a);
           }
@@ -326,7 +326,7 @@ var CustomImportScript = (() => {
       const title = card.querySelector(".field--name-node-title h2, .field--name-node-title h3");
       const titleText = title ? title.textContent.trim() : "";
       const link = card.querySelector("a.resource-card-link");
-      const href = link ? link.href : "";
+      const href = link ? link.getAttribute("href") || "" : "";
       const contentCell = [];
       if (categoryText) {
         const em = document.createElement("em");
@@ -340,7 +340,7 @@ var CustomImportScript = (() => {
       }
       if (href) {
         const a = document.createElement("a");
-        a.href = href;
+        a.setAttribute("href", href);
         a.textContent = "Read more";
         const p = document.createElement("p");
         p.append(a);
@@ -449,6 +449,19 @@ var CustomImportScript = (() => {
           const text = el.textContent.trim();
           if (text === "Thanks for sharing!" || text === "\u2713" || text === "More\u2026") {
             el.remove();
+          }
+        }
+      });
+      element.querySelectorAll("a[href]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (href && (href.startsWith("https://www.cvent.com/") || href.startsWith("http://www.cvent.com/"))) {
+          try {
+            const url = new URL(href);
+            const path = url.pathname.replace(/\/$/, "") || "/";
+            if (path.startsWith("/en/") || path === "/en") {
+              a.setAttribute("href", path);
+            }
+          } catch (e) {
           }
         }
       });

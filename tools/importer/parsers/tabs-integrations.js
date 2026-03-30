@@ -74,9 +74,10 @@ export default function parse(element, { document }) {
       const link = logo.querySelector('a');
       const img = logo.querySelector('img');
       if (img) {
-        if (link && link.href) {
+        const linkHref = link ? link.getAttribute('href') : '';
+        if (link && linkHref) {
           const a = document.createElement('a');
-          a.href = link.href;
+          a.setAttribute('href', linkHref);
           a.append(img.cloneNode(true));
           contentCell.push(a);
         } else {

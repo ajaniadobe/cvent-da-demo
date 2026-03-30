@@ -318,6 +318,19 @@ var CustomImportScript = (() => {
           }
         }
       });
+      element.querySelectorAll("a[href]").forEach((a) => {
+        const href = a.getAttribute("href");
+        if (href && (href.startsWith("https://www.cvent.com/") || href.startsWith("http://www.cvent.com/"))) {
+          try {
+            const url = new URL(href);
+            const path = url.pathname.replace(/\/$/, "") || "/";
+            if (path.startsWith("/en/") || path === "/en") {
+              a.setAttribute("href", path);
+            }
+          } catch (e) {
+          }
+        }
+      });
     }
     if (hookName === TransformHook.afterTransform) {
       WebImporter.DOMUtils.remove(element, [
