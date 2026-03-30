@@ -26,29 +26,19 @@
   min-height: 400px;
 }
 
-/* first row: background image (picture element) */
+/* first row: background image — hidden on mobile, shown on desktop */
 .hero-homepage > div:first-child {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-homepage picture {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
+  display: none;
 }
 
 .hero-homepage img {
-  object-fit: cover;
   width: 100%;
-  height: 100%;
+  height: auto;
 }
 
-/* content rows sit above the image */
+/* content rows */
 .hero-homepage > div:not(:first-child) {
   position: relative;
-  z-index: 1;
   max-width: 600px;
 }
 
@@ -150,16 +140,18 @@
   }
 
   .hero-homepage > div:first-child {
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 55%;
-    height: 100%;
-    left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 50%;
+    max-width: 50%;
+    order: 2;
   }
 
   .hero-homepage > div:not(:first-child) {
-    max-width: 55%;
+    flex: 0 0 50%;
+    max-width: 50%;
+    order: 1;
   }
 
   .hero-homepage h1 {
@@ -263,8 +255,14 @@
     max-width: 1400px;
   }
 
+  .hero-homepage > div:first-child {
+    flex: 0 0 45%;
+    max-width: 45%;
+  }
+
   .hero-homepage > div:not(:first-child) {
-    max-width: 50%;
+    flex: 0 0 55%;
+    max-width: 55%;
   }
 
   .hero-bottom-wrapper {
