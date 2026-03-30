@@ -405,12 +405,19 @@
   line-height: 1;
 }
 
-/* Reset paragraph size in gradient sections (prevents stats rule from
-   matching inline <strong> like "Cvent <strong>IQ</strong>") */
+/* Reset paragraph size and grid layout in gradient sections (prevents stats
+   rules from matching inline <strong> like "Cvent <strong>IQ</strong>") */
 .section.blue-purple-gradient .columns-media p,
 .section.blue-green-gradient .columns-media p {
   font-size: var(--body-font-size-l);
   margin-bottom: 16px;
+}
+
+@media (width >= 900px) {
+  .section.blue-purple-gradient .columns-media > div > div:not(.columns-media-img-col),
+  .section.blue-green-gradient .columns-media > div > div:not(.columns-media-img-col) {
+    display: block;
+  }
 }
 
 /* -------------------------------------------------------
