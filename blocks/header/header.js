@@ -139,13 +139,21 @@ async function decorateNavItem(li) {
   const link = li.querySelector(':scope > p > a');
   if (link) link.classList.add('main-nav-link');
 
-  // Dynamically load mega-menu fragment based on nav link href
-  const href = link?.getAttribute('href');
-  const fragmentName = href && MEGA_MENUS[href];
-  if (fragmentName) {
-    const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/${fragmentName}`);
-    if (fragment) {
-      li.append(fragment);
+  // Clean up any auto-detected fragment error blocks (from stale cached content)
+  li.querySelectorAll('.has-error').forEach((el) => {
+    const wrapper = el.closest('p') || el.parentElement;
+    wrapper.remove();
+  });
+
+  // Dynamically load mega-menu fragment if auto-detection didn't already succeed
+  if (!li.querySelector('.fragment-content')) {
+    const href = link?.getAttribute('href');
+    const fragmentName = href && MEGA_MENUS[href];
+    if (fragmentName) {
+      const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/${fragmentName}`);
+      if (fragment) {
+        li.append(fragment);
+      }
     }
   }
 
