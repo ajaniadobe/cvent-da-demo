@@ -168,7 +168,20 @@
   }
 
   .hero-notification-card {
-    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 32px;
+    text-align: left;
+  }
+
+  .hero-notification-card p {
+    margin: 0;
+    flex: 1;
+  }
+
+  .hero-notification-card p:last-child {
+    flex: none;
   }
 }
 
@@ -187,6 +200,7 @@
 .hero-bottom-wrapper {
   position: relative;
   margin: 0 15px;
+  padding-bottom: 48px;
   z-index: 2;
 }
 
@@ -213,11 +227,16 @@
   left: 50%;
   transform: translate(-50%, 50%);
   z-index: 3;
-  background: var(--color-light);
+  background:
+    linear-gradient(rgb(0 202 157), rgb(0 106 225) 50%, rgb(132 87 217)) no-repeat 0 50% / 6px 100%,
+    var(--color-light);
   border-radius: 8px;
-  padding: 16px 24px;
+  padding: 20px 24px;
   text-align: center;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
+  box-shadow: 0 0 12px 2px rgb(0 0 0 / 10%);
+  width: 90%;
+  max-width: 1200px;
+  box-sizing: border-box;
 }
 
 .hero-notification-card p {
