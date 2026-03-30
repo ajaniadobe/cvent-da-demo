@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -134,6 +117,21 @@ var CustomImportScript = (() => {
             contentCol.push(el);
           });
         }
+        const statItems = contentSource.querySelectorAll(".paragraph--type--simple-stat");
+        statItems.forEach((stat) => {
+          const numEl = stat.querySelector(".field--name-field-stat");
+          const descEl = stat.querySelector(".field--name-field-description p");
+          if (numEl) {
+            const p = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = numEl.textContent.trim();
+            p.append(strong);
+            contentCol.push(p);
+          }
+          if (descEl) {
+            contentCol.push(descEl);
+          }
+        });
       }
       const isMediaFirst = element.classList.contains("media-position-left") || element.classList.contains("media-order-first");
       if (isMediaFirst) {
@@ -411,6 +409,110 @@ var CustomImportScript = (() => {
     }
   }
 
+  // tools/importer/transformers/fragment-replacer.js
+  function transform2(hookName, element, payload) {
+    if (hookName !== "afterTransform") return;
+    const { document } = payload;
+    const fragments = payload.template && payload.template.fragments;
+    if (!fragments || fragments.length === 0) return;
+    fragments.forEach((frag) => {
+      const { path, match } = frag;
+      if (!path || !match) return;
+      const toReplace = findMatchingElements(element, match);
+      if (toReplace.length === 0) return;
+      const link = document.createElement("a");
+      link.href = path;
+      link.textContent = path;
+      const block = WebImporter.Blocks.createBlock(document, { name: "fragment", cells: [[link]] });
+      toReplace[0].replaceWith(block);
+      for (let i = 1; i < toReplace.length; i++) toReplace[i].remove();
+      console.log("[fragment-replacer] Replaced with fragment: " + path);
+    });
+  }
+  function normalizeBlockName(name) {
+    return name.toLowerCase().replace(/[-\s]+/g, "");
+  }
+  function isBlockTable(el, blockName) {
+    if (!el || el.tagName !== "TABLE") return false;
+    const th = el.querySelector("tr:first-child th");
+    if (!th) return false;
+    return normalizeBlockName(th.textContent.trim()) === normalizeBlockName(blockName);
+  }
+  function findBlockTables(root, blockName) {
+    const tables = root.querySelectorAll("table");
+    const results = [];
+    for (const table of tables) {
+      if (isBlockTable(table, blockName)) results.push(table);
+    }
+    return results;
+  }
+  function findMatchingElements(root, match) {
+    if (match.heading && match.blockClass) {
+      const headings = root.querySelectorAll("h2");
+      for (const h2 of headings) {
+        if (!h2.textContent.trim().toLowerCase().startsWith(match.heading.toLowerCase())) continue;
+        let sibling = h2.nextElementSibling;
+        let steps = 0;
+        while (sibling && steps < 5) {
+          if (isBlockTable(sibling, match.blockClass)) {
+            const elements = [h2];
+            let walker = h2.nextElementSibling;
+            while (walker && walker !== sibling) {
+              elements.push(walker);
+              walker = walker.nextElementSibling;
+            }
+            elements.push(sibling);
+            return elements;
+          }
+          if (sibling.tagName === "HR") break;
+          sibling = sibling.nextElementSibling;
+          steps++;
+        }
+      }
+      return [];
+    }
+    if (match.blockClass && match.contentText) {
+      const tables = findBlockTables(root, match.blockClass);
+      for (const table of tables) {
+        if (!table.textContent.includes(match.contentText)) continue;
+        const elements = [table];
+        const prev = table.previousElementSibling;
+        if (prev && prev.tagName === "H2" && prev.textContent.trim().toLowerCase().startsWith("why cvent")) {
+          elements.unshift(prev);
+        }
+        return elements;
+      }
+      return [];
+    }
+    if (match.heading && match.followingCount) {
+      const headings = root.querySelectorAll("h2");
+      for (const h2 of headings) {
+        if (!h2.textContent.trim().toLowerCase().startsWith(match.heading.toLowerCase())) continue;
+        const elements = [h2];
+        let next = h2.nextElementSibling;
+        let count = 0;
+        while (next && count < match.followingCount) {
+          if (next.tagName === "HR" || next.tagName === "H2") break;
+          if (isBlockTable(next, "Section Metadata")) break;
+          elements.push(next);
+          next = next.nextElementSibling;
+          count++;
+        }
+        if (count > 0) return elements;
+      }
+      return [];
+    }
+    if (match.sourceSelector) {
+      const candidates = root.querySelectorAll(match.sourceSelector);
+      for (const el of candidates) {
+        if (match.contentText && !el.textContent.includes(match.contentText)) continue;
+        return [el];
+      }
+      return [];
+    }
+    return [];
+  }
+
   // tools/importer/import-training-certification.js
   var parsers = {
     "hero-product-form": parse,
@@ -432,11 +534,17 @@ var CustomImportScript = (() => {
         name: "columns-media",
         instances: [".paragraph--type--compound-media-bar", ".paragraph--type--header-banner-media"]
       }
+    ],
+    fragments: [
+      {
+        path: "/content/fragments/why-cvent-social-proof",
+        match: { sourceSelector: ".paragraph--type--compound-content-bar", contentText: "24/7 support" }
+      }
     ]
   };
-  var transformers = [transform];
+  var transformers = [transform, transform2];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), { template: PAGE_TEMPLATE });
+    const enhancedPayload = { ...payload, template: PAGE_TEMPLATE };
     transformers.forEach((t) => {
       try {
         t.call(null, hookName, element, enhancedPayload);

@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/become-partner",
+  "path": "fragments/why-cvent-social-proof",
+  "timestamp": "2026-03-30T05:06:44.795Z",
+  "title": "Fragment: why-cvent-social-proof",
+  "template": "fragment",
+  "blocks": [
+    "social-proof"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "url": "https://www.cvent.com/en/supplier-venue",
+  "path": "fragments/why-cvent-cards",
+  "timestamp": "2026-03-30T05:06:33.586Z",
+  "title": "Fragment: why-cvent-cards",
+  "template": "fragment",
+  "blocks": [
+    "cards"
+  ]
+}

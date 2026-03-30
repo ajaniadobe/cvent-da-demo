@@ -4,6 +4,7 @@
 import heroProductFormParser from './parsers/hero-product-form.js';
 import columnsMediaParser from './parsers/columns-media.js';
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
+import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 
 const parsers = {
   'hero-product-form': heroProductFormParser,
@@ -27,9 +28,15 @@ const PAGE_TEMPLATE = {
       instances: ['.paragraph--type--compound-media-bar', '.paragraph--type--header-banner-media'],
     },
   ],
+  fragments: [
+    {
+      path: '/content/fragments/why-cvent-social-proof',
+      match: { sourceSelector: '.paragraph--type--compound-content-bar', contentText: '24/7 support' },
+    },
+  ],
 };
 
-const transformers = [cventCleanupTransformer];
+const transformers = [cventCleanupTransformer, fragmentReplacerTransformer];
 
 function executeTransformers(hookName, element, payload) {
   const enhancedPayload = { ...payload, template: PAGE_TEMPLATE };

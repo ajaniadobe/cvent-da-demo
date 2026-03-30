@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -128,36 +111,30 @@ var CustomImportScript = (() => {
       const name = quadrantId.replace("quadrant-", "");
       if (!name) return;
       const tagline = taglines[name] || "";
-      const featuresList = document.createElement("ul");
+      const featuresDiv = document.createElement("div");
       const accordionItems = quadrant.querySelectorAll(".accordion-item");
       accordionItems.forEach((item) => {
-        const tabBtn = item.querySelector(".desktop-accordion-tab span");
-        const featureName = tabBtn ? tabBtn.textContent.trim() : "";
+        const featureName = item.querySelector(".inner-category span, .desktop-accordion-tab span");
         const listItems = item.querySelectorAll(".accordion-list li");
         listItems.forEach((li) => {
-          const desc = li.querySelector("p");
           const link = li.querySelector("a");
-          const featureLi = document.createElement("li");
-          if (featureName) {
-            const strong = document.createElement("strong");
-            strong.textContent = featureName;
-            featureLi.append(strong);
-          }
-          if (desc) {
-            featureLi.append(document.createTextNode(": "));
-            featureLi.append(document.createTextNode(desc.textContent.trim()));
-          }
+          const desc = li.querySelector("p");
           if (link) {
-            featureLi.append(document.createTextNode(" "));
+            const linkP = document.createElement("p");
             const a = document.createElement("a");
             a.setAttribute("href", link.getAttribute("href") || "");
-            a.textContent = link.textContent.trim();
-            featureLi.append(a);
+            a.textContent = featureName && featureName.textContent.trim() || link.textContent.trim();
+            linkP.append(a);
+            featuresDiv.append(linkP);
           }
-          featuresList.append(featureLi);
+          if (desc) {
+            const descP = document.createElement("p");
+            descP.textContent = desc.textContent.trim();
+            featuresDiv.append(descP);
+          }
         });
       });
-      cells.push([name, tagline, featuresList]);
+      cells.push([name, tagline, featuresDiv]);
     });
     if (cells.length > 0) {
       const block = WebImporter.Blocks.createBlock(document, {
@@ -197,6 +174,21 @@ var CustomImportScript = (() => {
             contentCol.push(el);
           });
         }
+        const statItems = contentSource.querySelectorAll(".paragraph--type--simple-stat");
+        statItems.forEach((stat) => {
+          const numEl = stat.querySelector(".field--name-field-stat");
+          const descEl = stat.querySelector(".field--name-field-description p");
+          if (numEl) {
+            const p = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = numEl.textContent.trim();
+            p.append(strong);
+            contentCol.push(p);
+          }
+          if (descEl) {
+            contentCol.push(descEl);
+          }
+        });
       }
       const isMediaFirst = element.classList.contains("media-position-left") || element.classList.contains("media-order-first");
       if (isMediaFirst) {
@@ -583,13 +575,137 @@ var CustomImportScript = (() => {
           });
           sectionEl.after(metaBlock);
         }
+        let firstSectionNode = sectionEl;
+        if (section.defaultContent && section.defaultContent.length > 0) {
+          const allDescendants = [...sectionEl.querySelectorAll("*")];
+          const midpoint = allDescendants.length / 2;
+          section.defaultContent.forEach((dcSelector) => {
+            const dcEl = element.querySelector(dcSelector);
+            if (!dcEl) {
+              console.warn(`Default content not found: ${dcSelector}`);
+              return;
+            }
+            if (!sectionEl.contains(dcEl)) return;
+            const dcIndex = allDescendants.indexOf(dcEl);
+            const isBefore = dcIndex >= 0 && dcIndex < midpoint;
+            if (isBefore) {
+              sectionEl.before(dcEl);
+              if (firstSectionNode === sectionEl) {
+                firstSectionNode = dcEl;
+              }
+            } else {
+              sectionEl.after(dcEl);
+            }
+          });
+        }
         const isFirst = section.id === sections[0].id;
         if (!isFirst) {
           const hr = document.createElement("hr");
-          sectionEl.before(hr);
+          firstSectionNode.before(hr);
         }
       });
     }
+  }
+
+  // tools/importer/transformers/fragment-replacer.js
+  function transform3(hookName, element, payload) {
+    if (hookName !== "afterTransform") return;
+    const { document } = payload;
+    const fragments = payload.template && payload.template.fragments;
+    if (!fragments || fragments.length === 0) return;
+    fragments.forEach((frag) => {
+      const { path, match } = frag;
+      if (!path || !match) return;
+      const toReplace = findMatchingElements(element, match);
+      if (toReplace.length === 0) return;
+      const link = document.createElement("a");
+      link.href = path;
+      link.textContent = path;
+      const block = WebImporter.Blocks.createBlock(document, {
+        name: "fragment",
+        cells: [[link]]
+      });
+      toReplace[0].replaceWith(block);
+      for (let i = 1; i < toReplace.length; i++) {
+        toReplace[i].remove();
+      }
+      console.log(`[fragment-replacer] Replaced with fragment: ${path}`);
+    });
+  }
+  function normalizeBlockName(name) {
+    return name.toLowerCase().replace(/[-\s]+/g, "");
+  }
+  function isBlockTable(el, blockName) {
+    if (!el || el.tagName !== "TABLE") return false;
+    const th = el.querySelector("tr:first-child th");
+    if (!th) return false;
+    return normalizeBlockName(th.textContent.trim()) === normalizeBlockName(blockName);
+  }
+  function findBlockTables(root, blockName) {
+    const tables = root.querySelectorAll("table");
+    const results = [];
+    for (const table of tables) {
+      if (isBlockTable(table, blockName)) results.push(table);
+    }
+    return results;
+  }
+  function findMatchingElements(root, match) {
+    if (match.heading && match.blockClass) {
+      const headings = root.querySelectorAll("h2");
+      for (const h2 of headings) {
+        if (!h2.textContent.trim().toLowerCase().startsWith(match.heading.toLowerCase())) continue;
+        let sibling = h2.nextElementSibling;
+        let steps = 0;
+        while (sibling && steps < 5) {
+          if (isBlockTable(sibling, match.blockClass)) {
+            const elements = [h2];
+            let walker = h2.nextElementSibling;
+            while (walker && walker !== sibling) {
+              elements.push(walker);
+              walker = walker.nextElementSibling;
+            }
+            elements.push(sibling);
+            return elements;
+          }
+          if (sibling.tagName === "HR") break;
+          sibling = sibling.nextElementSibling;
+          steps++;
+        }
+      }
+      return [];
+    }
+    if (match.blockClass && match.contentText) {
+      const tables = findBlockTables(root, match.blockClass);
+      for (const table of tables) {
+        if (!table.textContent.includes(match.contentText)) continue;
+        const elements = [table];
+        const prev = table.previousElementSibling;
+        if (prev && prev.tagName === "H2" && prev.textContent.trim().toLowerCase().startsWith("why cvent")) {
+          elements.unshift(prev);
+        }
+        return elements;
+      }
+      return [];
+    }
+    if (match.heading && match.followingCount) {
+      const headings = root.querySelectorAll("h2");
+      for (const h2 of headings) {
+        if (!h2.textContent.trim().toLowerCase().startsWith(match.heading.toLowerCase())) continue;
+        const elements = [h2];
+        let next = h2.nextElementSibling;
+        let count = 0;
+        while (next && count < match.followingCount) {
+          if (next.tagName === "HR" || next.tagName === "H2") break;
+          if (isBlockTable(next, "Section Metadata")) break;
+          elements.push(next);
+          next = next.nextElementSibling;
+          count++;
+        }
+        if (count > 0) return elements;
+      }
+      return [];
+    }
+    return [];
   }
 
   // tools/importer/import-supplier-venue.js
@@ -700,16 +816,24 @@ var CustomImportScript = (() => {
         blocks: ["cards-feature"],
         defaultContent: [".compound-content-bar .paragraph-header h2"]
       }
+    ],
+    fragments: [
+      {
+        path: "/content/fragments/why-cvent-cards",
+        match: { heading: "Why Cvent", blockClass: "cards-feature" }
+      }
     ]
   };
   var transformers = [
     transform,
-    ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : []
+    ...PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [transform2] : [],
+    transform3
   ];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), {
+    const enhancedPayload = {
+      ...payload,
       template: PAGE_TEMPLATE
-    });
+    };
     transformers.forEach((transformerFn) => {
       try {
         transformerFn.call(null, hookName, element, enhancedPayload);

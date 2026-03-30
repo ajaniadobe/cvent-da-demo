@@ -11,6 +11,7 @@ import cardsFeatureParser from './parsers/cards-feature.js';
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
 import cventSectionsTransformer from './transformers/cvent-sections.js';
+import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 
 // PARSER REGISTRY
 const parsers = {
@@ -123,12 +124,19 @@ const PAGE_TEMPLATE = {
       defaultContent: ['.compound-content-bar .paragraph-header h2'],
     },
   ],
+  fragments: [
+    {
+      path: '/content/fragments/why-cvent-cards',
+      match: { heading: 'Why Cvent', blockClass: 'cards-feature' },
+    },
+  ],
 };
 
 // TRANSFORMER REGISTRY
 const transformers = [
   cventCleanupTransformer,
   ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [cventSectionsTransformer] : []),
+  fragmentReplacerTransformer,
 ];
 
 /**
