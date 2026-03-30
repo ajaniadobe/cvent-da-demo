@@ -8,6 +8,8 @@ import cardsGalleryParser from './parsers/cards-gallery.js';
 import columnsMediaParser from './parsers/columns-media.js';
 import cardsTestimonialParser from './parsers/cards-testimonial.js';
 import columnsParser from './parsers/columns.js';
+import accordionParser from './parsers/accordion.js';
+import formParser from './parsers/form.js';
 
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
@@ -22,6 +24,8 @@ const parsers = {
   'columns-media': columnsMediaParser,
   'cards-testimonial': cardsTestimonialParser,
   'columns': columnsParser,
+  'accordion': accordionParser,
+  'form': formParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION
@@ -73,6 +77,18 @@ const PAGE_TEMPLATE = {
       name: 'columns',
       instances: [
         '.paragraph--type--layout-content.column-count-2',
+      ],
+    },
+    {
+      name: 'accordion',
+      instances: [
+        '.paragraph--type--layout-accordion',
+      ],
+    },
+    {
+      name: 'form',
+      instances: [
+        '.paragraph--type--compound-form',
       ],
     },
   ],

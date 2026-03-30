@@ -3,12 +3,19 @@
 
 import heroProductFormParser from './parsers/hero-product-form.js';
 import columnsMediaParser from './parsers/columns-media.js';
+import cardsFeatureParser from './parsers/cards-feature.js';
+import cardsQuoteParser from './parsers/cards-quote.js';
+import tabsHorizontalParser from './parsers/tabs-horizontal.js';
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
+import cventSectionsTransformer from './transformers/cvent-sections.js';
 import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 
 const parsers = {
   'hero-product-form': heroProductFormParser,
   'columns-media': columnsMediaParser,
+  'cards-feature': cardsFeatureParser,
+  'cards-quote': cardsQuoteParser,
+  'tabs-horizontal': tabsHorizontalParser,
 };
 
 const PAGE_TEMPLATE = {
@@ -27,6 +34,18 @@ const PAGE_TEMPLATE = {
       name: 'columns-media',
       instances: ['.paragraph--type--compound-media-bar', '.paragraph--type--header-banner-media'],
     },
+    {
+      name: 'cards-feature',
+      instances: ['.paragraph--type--layout-content.column-count-4'],
+    },
+    {
+      name: 'cards-quote',
+      instances: ['.paragraph--type--layout-content.column-count-2'],
+    },
+    {
+      name: 'tabs-horizontal',
+      instances: ['.paragraph--type--layout-tabs-h'],
+    },
   ],
   fragments: [
     {
@@ -36,7 +55,11 @@ const PAGE_TEMPLATE = {
   ],
 };
 
-const transformers = [cventCleanupTransformer, fragmentReplacerTransformer];
+const transformers = [
+  cventCleanupTransformer,
+  ...(PAGE_TEMPLATE.sections && PAGE_TEMPLATE.sections.length > 1 ? [cventSectionsTransformer] : []),
+  fragmentReplacerTransformer,
+];
 
 function executeTransformers(hookName, element, payload) {
   const enhancedPayload = { ...payload, template: PAGE_TEMPLATE };

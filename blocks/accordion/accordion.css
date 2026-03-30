@@ -1,0 +1,46 @@
+.accordion .accordion-list {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.accordion .accordion-item {
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+
+.accordion .accordion-question {
+  padding: 20px 0;
+  font-size: var(--body-font-size-l, 1.125rem);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.accordion .accordion-question::marker,
+.accordion .accordion-question::-webkit-details-marker {
+  display: none;
+}
+
+.accordion .accordion-question::after {
+  content: '+';
+  float: right;
+  font-size: 1.5rem;
+  font-weight: 300;
+  transition: transform 0.2s ease;
+}
+
+.accordion details[open] .accordion-question::after {
+  content: '−';
+}
+
+.accordion .accordion-answer {
+  padding: 0 0 20px;
+  line-height: 1.6;
+}
+
+.accordion .accordion-answer p {
+  margin: 0 0 12px;
+}
+
+.accordion .accordion-answer a {
+  color: var(--link-color, #0070c0);
+}

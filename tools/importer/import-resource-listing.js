@@ -3,6 +3,7 @@
 
 // PARSER IMPORTS
 import cardsResourceParser from './parsers/cards-resource.js';
+import formParser from './parsers/form.js';
 
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
@@ -11,6 +12,7 @@ import cventSectionsTransformer from './transformers/cvent-sections.js';
 // PARSER REGISTRY
 const parsers = {
   'cards-resource': cardsResourceParser,
+  'form': formParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION
@@ -30,6 +32,12 @@ const PAGE_TEMPLATE = {
       instances: [
         '.paragraph--type--summary-resources',
         '.paragraph--type--reference-block.provider--views',
+      ],
+    },
+    {
+      name: 'form',
+      instances: [
+        '.paragraph--type--compound-form',
       ],
     },
   ],

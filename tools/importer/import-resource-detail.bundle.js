@@ -1,25 +1,8 @@
 var CustomImportScript = (() => {
   var __defProp = Object.defineProperty;
-  var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-  var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
-  var __propIsEnum = Object.prototype.propertyIsEnumerable;
-  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
-      }
-    return a;
-  };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -69,6 +52,21 @@ var CustomImportScript = (() => {
             contentCol.push(el);
           });
         }
+        const statItems = contentSource.querySelectorAll(".paragraph--type--simple-stat");
+        statItems.forEach((stat) => {
+          const numEl = stat.querySelector(".field--name-field-stat");
+          const descEl = stat.querySelector(".field--name-field-description p");
+          if (numEl) {
+            const p = document.createElement("p");
+            const strong = document.createElement("strong");
+            strong.textContent = numEl.textContent.trim();
+            p.append(strong);
+            contentCol.push(p);
+          }
+          if (descEl) {
+            contentCol.push(descEl);
+          }
+        });
       }
       const isMediaFirst = element.classList.contains("media-position-left") || element.classList.contains("media-order-first");
       if (isMediaFirst) {
@@ -178,6 +176,84 @@ var CustomImportScript = (() => {
     }
     const block = WebImporter.Blocks.createBlock(document, {
       name: "columns-media",
+      cells
+    });
+    element.replaceWith(block);
+  }
+
+  // tools/importer/parsers/form.js
+  function parse2(element, { document }) {
+    const form = element.querySelector("form");
+    if (!form) return;
+    const contentWrap = element.querySelector(".field--name-field-p-content-item");
+    if (contentWrap) {
+      const contentEls = contentWrap.querySelectorAll("h2, h3, h4, p, ul, ol, img");
+      const frag = document.createDocumentFragment();
+      contentEls.forEach((el) => frag.appendChild(el.cloneNode(true)));
+      element.before(frag);
+    }
+    const cells = [];
+    const heading = element.querySelector(".field--name-field-p-sidebar-item h3") || element.querySelector(".field--name-field-p-sidebar-item h2") || element.querySelector("h3") || element.querySelector("h2");
+    const headingText = heading ? heading.textContent.trim() : "Contact Us";
+    cells.push([headingText]);
+    const processedInputs = /* @__PURE__ */ new Set();
+    const labels = form.querySelectorAll("label");
+    labels.forEach((label) => {
+      const labelText = label.textContent.trim().replace(/\s*\*\s*$/, "").trim();
+      if (!labelText) return;
+      const forAttr = label.getAttribute("for");
+      let input = null;
+      if (forAttr) {
+        try {
+          input = form.querySelector(`[id="${forAttr}"]`);
+        } catch (e) {
+        }
+      }
+      if (!input) {
+        input = label.parentElement.querySelector("input, select, textarea");
+      }
+      if (!input || processedInputs.has(input)) return;
+      processedInputs.add(input);
+      const tagName = input.tagName.toLowerCase();
+      const inputType = input.getAttribute("type") || "text";
+      if (inputType === "hidden" || inputType === "submit" || inputType === "button") return;
+      if (input.name === "cpt" || input.name === "honeypot") return;
+      let edsType = "text";
+      if (tagName === "select") {
+        edsType = "select";
+      } else if (tagName === "textarea") {
+        edsType = "textarea";
+      } else if (inputType === "email" || input.name && input.name.toLowerCase().includes("email")) {
+        edsType = "email";
+      } else if (inputType === "tel" || input.name && input.name.toLowerCase().includes("phone")) {
+        edsType = "tel";
+      } else if (inputType === "checkbox") {
+        edsType = "checkbox";
+      }
+      const isRequired = input.required || input.getAttribute("aria-required") === "true" || label.textContent.includes("*");
+      const requiredMarker = isRequired ? "*" : "";
+      const row = [labelText, edsType, requiredMarker];
+      if (tagName === "select") {
+        const options = Array.from(input.options).map((o) => o.textContent.trim()).filter((o) => o && !o.startsWith("---"));
+        row.push(options.slice(0, 20).join(", "));
+      }
+      cells.push(row);
+    });
+    if (cells.length === 1) {
+      cells.push(["First name", "text", "*"]);
+      cells.push(["Last name", "text", "*"]);
+      cells.push(["Work email", "email", "*"]);
+      cells.push(["Phone", "tel", "*"]);
+      cells.push(["Organization", "text", "*"]);
+      cells.push(["Job function", "select", "*", "Select one, Administration, Business Owner, Event Planning, Executive, Marketing, Operations, Sales, Technology, Other"]);
+      cells.push(["Country", "select", "*", "Select Country, USA, Canada, United Kingdom, Germany, Australia"]);
+    }
+    const submitBtn = form.querySelector('button[type="submit"], .mktoButton, input[type="submit"]');
+    let submitText = submitBtn ? submitBtn.textContent.trim() : "";
+    if (!submitText || submitText === "Submit") submitText = "Request a demo";
+    cells.push([submitText]);
+    const block = WebImporter.Blocks.createBlock(document, {
+      name: "Form",
       cells
     });
     element.replaceWith(block);
@@ -348,7 +424,8 @@ var CustomImportScript = (() => {
 
   // tools/importer/import-resource-detail.js
   var parsers = {
-    "columns-media": parse
+    "columns-media": parse,
+    "form": parse2
   };
   var PAGE_TEMPLATE = {
     name: "resource-detail",
@@ -360,12 +437,16 @@ var CustomImportScript = (() => {
       {
         name: "columns-media",
         instances: [".paragraph--type--compound-media-bar", ".paragraph--type--header-banner-media"]
+      },
+      {
+        name: "form",
+        instances: [".paragraph--type--compound-form"]
       }
     ]
   };
   var transformers = [transform];
   function executeTransformers(hookName, element, payload) {
-    const enhancedPayload = __spreadProps(__spreadValues({}, payload), { template: PAGE_TEMPLATE });
+    const enhancedPayload = { ...payload, template: PAGE_TEMPLATE };
     transformers.forEach((t) => {
       try {
         t.call(null, hookName, element, enhancedPayload);

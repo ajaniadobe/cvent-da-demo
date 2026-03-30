@@ -4,6 +4,11 @@
 // PARSER IMPORTS
 import columnsMediaParser from './parsers/columns-media.js';
 import logoWallParser from './parsers/logo-wall.js';
+import accordionParser from './parsers/accordion.js';
+import formStandaloneParser from './parsers/form-standalone.js';
+import cardsQuoteParser from './parsers/cards-quote.js';
+import cardsFeatureParser from './parsers/cards-feature.js';
+import cardsTestimonialParser from './parsers/cards-testimonial.js';
 
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
@@ -14,6 +19,11 @@ import fragmentReplacerTransformer from './transformers/fragment-replacer.js';
 const parsers = {
   'columns-media': columnsMediaParser,
   'logo-wall': logoWallParser,
+  'accordion': accordionParser,
+  'form-standalone': formStandaloneParser,
+  'cards-quote': cardsQuoteParser,
+  'cards-feature': cardsFeatureParser,
+  'cards-testimonial': cardsTestimonialParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION
@@ -39,6 +49,36 @@ const PAGE_TEMPLATE = {
       name: 'logo-wall',
       instances: [
         '.paragraph--type--logo-bar',
+      ],
+    },
+    {
+      name: 'accordion',
+      instances: [
+        '.paragraph--type--layout-accordion',
+      ],
+    },
+    {
+      name: 'form-standalone',
+      instances: [
+        '.paragraph--type--cvent-marketo-form',
+      ],
+    },
+    {
+      name: 'cards-quote',
+      instances: [
+        '.paragraph--type--layout-content.column-count-2',
+      ],
+    },
+    {
+      name: 'cards-feature',
+      instances: [
+        '.paragraph--type--layout-content.column-count-4',
+      ],
+    },
+    {
+      name: 'cards-testimonial',
+      instances: [
+        '.paragraph--type--layout-content.column-count-3',
       ],
     },
   ],

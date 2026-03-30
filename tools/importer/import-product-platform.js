@@ -9,6 +9,8 @@ import cardsTestimonialParser from './parsers/cards-testimonial.js';
 import cardsFeatureParser from './parsers/cards-feature.js';
 import formParser from './parsers/form.js';
 import logoWallParser from './parsers/logo-wall.js';
+import tabsHorizontalParser from './parsers/tabs-horizontal.js';
+import accordionParser from './parsers/accordion.js';
 
 // TRANSFORMER IMPORTS
 import cventCleanupTransformer from './transformers/cvent-cleanup.js';
@@ -18,11 +20,13 @@ import cventSectionsTransformer from './transformers/cvent-sections.js';
 const parsers = {
   'hero-product-form': heroProductFormParser,
   'tabs-integrations': tabsIntegrationsParser,
+  'tabs-horizontal': tabsHorizontalParser,
   'columns-media': columnsMediaParser,
   'cards-testimonial': cardsTestimonialParser,
   'cards-feature': cardsFeatureParser,
   'form': formParser,
   'logo-wall': logoWallParser,
+  'accordion': accordionParser,
 };
 
 // PAGE TEMPLATE CONFIGURATION
@@ -80,6 +84,18 @@ const PAGE_TEMPLATE = {
       name: 'logo-wall',
       instances: [
         '.paragraph--type--logo-bar',
+      ],
+    },
+    {
+      name: 'tabs-horizontal',
+      instances: [
+        '.paragraph--type--layout-tabs-h',
+      ],
+    },
+    {
+      name: 'accordion',
+      instances: [
+        '.paragraph--type--layout-accordion',
       ],
     },
   ],
