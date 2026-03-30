@@ -12,6 +12,14 @@ const HEADER_ACTIONS = [
   '/tools/widgets/toggle',
 ];
 
+const MEGA_MENUS = {
+  '/en/products': 'products',
+  '/en/event-types': 'event-types',
+  '/en/resources': 'resources',
+  '/en/company': 'company',
+  '/en/supplier-venue': 'suppliers',
+};
+
 function closeAllMenus() {
   const openMenus = document.body.querySelectorAll('header .is-open');
   for (const openMenu of openMenus) {
@@ -126,10 +134,21 @@ function decorateMegaMenu(li) {
   return wrapper;
 }
 
-function decorateNavItem(li) {
+async function decorateNavItem(li) {
   li.classList.add('main-nav-item');
   const link = li.querySelector(':scope > p > a');
   if (link) link.classList.add('main-nav-link');
+
+  // Dynamically load mega-menu fragment based on nav link href
+  const href = link?.getAttribute('href');
+  const fragmentName = href && MEGA_MENUS[href];
+  if (fragmentName) {
+    const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/${fragmentName}`);
+    if (fragment) {
+      li.append(fragment);
+    }
+  }
+
   const menu = decorateMegaMenu(li) || decorateMenu(li);
   if (!menu || !link) return;
   link.addEventListener('click', (e) => {
@@ -148,7 +167,7 @@ function decorateBrandSection(section) {
   brandLink.append(span);
 }
 
-function decorateNavSection(section) {
+async function decorateNavSection(section) {
   section.classList.add('main-nav-section');
   const navContent = section.querySelector('.default-content');
   const navList = section.querySelector('ul');
@@ -160,9 +179,7 @@ function decorateNavSection(section) {
   navContent.append(nav);
 
   const mainNavItems = section.querySelectorAll('nav > ul > li');
-  for (const navItem of mainNavItems) {
-    decorateNavItem(navItem);
-  }
+  await Promise.all([...mainNavItems].map((navItem) => decorateNavItem(navItem)));
 }
 
 async function decorateActionSection(section) {
@@ -172,7 +189,7 @@ async function decorateActionSection(section) {
 async function decorateHeader(fragment) {
   const sections = fragment.querySelectorAll(':scope > .section');
   if (sections[0]) decorateBrandSection(sections[0]);
-  if (sections[1]) decorateNavSection(sections[1]);
+  if (sections[1]) await decorateNavSection(sections[1]);
   if (sections[2]) decorateActionSection(sections[2]);
 
   for (const pattern of HEADER_ACTIONS) {
