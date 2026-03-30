@@ -64,6 +64,23 @@ export default function parse(element, { document }) {
           contentCol.push(el);
         });
       }
+
+      // Extract stat numbers if present (may be siblings of simple-content)
+      const statItems = contentSource.querySelectorAll('.paragraph--type--simple-stat');
+      statItems.forEach((stat) => {
+        const numEl = stat.querySelector('.field--name-field-stat');
+        const descEl = stat.querySelector('.field--name-field-description p');
+        if (numEl) {
+          const p = document.createElement('p');
+          const strong = document.createElement('strong');
+          strong.textContent = numEl.textContent.trim();
+          p.append(strong);
+          contentCol.push(p);
+        }
+        if (descEl) {
+          contentCol.push(descEl);
+        }
+      });
     }
 
     // Determine column order based on media position class
