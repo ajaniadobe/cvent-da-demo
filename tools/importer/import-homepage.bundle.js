@@ -621,10 +621,33 @@ var CustomImportScript = (() => {
           });
           sectionEl.after(metaBlock);
         }
+        let firstSectionNode = sectionEl;
+        if (section.defaultContent && section.defaultContent.length > 0) {
+          const allDescendants = [...sectionEl.querySelectorAll("*")];
+          const midpoint = allDescendants.length / 2;
+          section.defaultContent.forEach((dcSelector) => {
+            const dcEl = element.querySelector(dcSelector);
+            if (!dcEl) {
+              console.warn(`Default content not found: ${dcSelector}`);
+              return;
+            }
+            if (!sectionEl.contains(dcEl)) return;
+            const dcIndex = allDescendants.indexOf(dcEl);
+            const isBefore = dcIndex >= 0 && dcIndex < midpoint;
+            if (isBefore) {
+              sectionEl.before(dcEl);
+              if (firstSectionNode === sectionEl) {
+                firstSectionNode = dcEl;
+              }
+            } else {
+              sectionEl.after(dcEl);
+            }
+          });
+        }
         const isFirst = section.id === sections[0].id;
         if (!isFirst) {
           const hr = document.createElement("hr");
-          sectionEl.before(hr);
+          firstSectionNode.before(hr);
         }
       });
     }
@@ -674,8 +697,8 @@ var CustomImportScript = (() => {
       { id: "section-2", name: "Meet CventIQ", selector: "#cvent-paragraph-compound_media_bar-1568076", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-3", name: "All-in-one Solution Stats", selector: "#cvent-paragraph-compound_media_bar-1458006", style: null, blocks: ["columns-media"], defaultContent: [] },
       { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: [], defaultContent: ["#cvent-paragraph-logo_bar-1542431"] },
-      { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: ["lifecycle-wheel"], defaultContent: [] },
-      { id: "section-6", name: "Product Cards Grid", selector: "#cvent-paragraph-layout_content-735741", style: null, blocks: ["cards-product"], defaultContent: [".paragraph--type--layout-content.column-count-3 > .layout-content-header", "#cvent-paragraph-link_default-892976"] },
+      { id: "section-5", name: "Event Lifecycle Wheel", selector: "#cvent-paragraph-reference_block-1267256", style: null, blocks: ["lifecycle-wheel"], defaultContent: ["#cvent-paragraph-reference_block-1267256 .wheel--optional-wysiwyg"] },
+      { id: "section-6", name: "Product Cards Grid", selector: "#cvent-paragraph-layout_content-735741", style: null, blocks: ["cards-product"], defaultContent: ["#cvent-paragraph-layout_content-735741 .paragraph-header", "#cvent-paragraph-link_default-892976"] },
       { id: "section-7", name: "Venue Sourcing", selector: "#cvent-paragraph-compound_media_bar-619191", style: "blue-green-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-8", name: "Social Proof", selector: "#cvent-paragraph-compound_content_bar-1200576", style: null, blocks: ["columns-media"], defaultContent: ["#join-thousands-of-planners-and-marketers-who-love-our-software"] },
       { id: "section-9", name: "CTA How It Works", selector: "#cvent-paragraph-compound_media_bar-1461776", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
