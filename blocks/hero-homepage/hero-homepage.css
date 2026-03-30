@@ -141,11 +141,12 @@
 
   .hero-homepage > div:first-child {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-end;
     flex: 0 0 50%;
     max-width: 50%;
     order: 2;
+    align-self: flex-start;
   }
 
   .hero-homepage > div:not(:first-child) {
