@@ -405,6 +405,14 @@
   line-height: 1;
 }
 
+/* Reset paragraph size in gradient sections (prevents stats rule from
+   matching inline <strong> like "Cvent <strong>IQ</strong>") */
+.section.blue-purple-gradient .columns-media p,
+.section.blue-green-gradient .columns-media p {
+  font-size: var(--body-font-size-l);
+  margin-bottom: 16px;
+}
+
 /* -------------------------------------------------------
    Stats number styling (e.g. 7M+, 315M+, 1K+, 24/7)
    ------------------------------------------------------- */
