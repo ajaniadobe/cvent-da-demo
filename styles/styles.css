@@ -372,40 +372,6 @@ main > .section.dark-blue {
     }
   }
 
-  /* notification card (default content inside dark-blue hero section) */
-  > .default-content {
-    background: var(--color-light);
-    color: var(--color-dark-blue);
-    border-radius: 8px;
-    padding: 24px 32px;
-    text-align: center;
-    margin-top: 24px;
-
-    p {
-      color: var(--color-dark-blue);
-      margin: 0 0 12px;
-    }
-
-    p:last-child {
-      margin-bottom: 0;
-    }
-
-    a {
-      display: inline-block;
-      background-color: var(--color-blue);
-      color: var(--color-light);
-      padding: 12px 32px;
-      border-radius: 24px;
-      font-weight: 700;
-      text-decoration: none;
-
-      &:hover,
-      &:focus {
-        background-color: var(--color-blue-hover);
-        color: var(--color-light);
-      }
-    }
-  }
 }
 
 main > .section.blue-purple-gradient {
@@ -452,7 +418,7 @@ main > .section.blue-purple-gradient {
     height: 300px;
     top: -80px;
     left: -60px;
-    background: radial-gradient(circle, rgba(255 255 255 / 0.12) 0%, transparent 70%);
+    background: radial-gradient(circle, rgb(255 255 255 / 12%) 0%, transparent 70%);
   }
 
   &::after {
@@ -460,7 +426,7 @@ main > .section.blue-purple-gradient {
     height: 400px;
     bottom: -120px;
     right: -80px;
-    background: radial-gradient(circle, rgba(255 255 255 / 0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgb(255 255 255 / 8%) 0%, transparent 70%);
   }
 }
 

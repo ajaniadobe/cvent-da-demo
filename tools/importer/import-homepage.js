@@ -53,7 +53,7 @@ const PAGE_TEMPLATE = {
     },
   ],
   sections: [
-    { id: 'section-1', name: 'Hero', selector: '.paragraph--type--header-banner-hero', style: 'dark-blue', blocks: ['hero-homepage'], defaultContent: ['.header-banner-hero-horizontal-notification-card'] },
+    { id: 'section-1', name: 'Hero', selector: '.paragraph--type--header-banner-hero', style: 'dark-blue', blocks: ['hero-homepage'], defaultContent: [] },
     { id: 'section-2', name: 'Meet CventIQ', selector: '#cvent-paragraph-compound_media_bar-1568076', style: 'blue-purple-gradient', blocks: ['columns-media'], defaultContent: [] },
     { id: 'section-3', name: 'All-in-one Solution Stats', selector: '#cvent-paragraph-compound_media_bar-1458006', style: null, blocks: ['columns-media'], defaultContent: [] },
     { id: 'section-4', name: 'Trusted By Logo Bar', selector: '#cvent-paragraph-logo_bar-1542431', style: null, blocks: [], defaultContent: ['#cvent-paragraph-logo_bar-1542431'] },

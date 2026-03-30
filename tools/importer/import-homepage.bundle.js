@@ -60,6 +60,30 @@ var CustomImportScript = (() => {
     if (contentCell.length > 0) {
       cells.push(contentCell);
     }
+    const parent = element.closest(".paragraph--type--header-banner-hero") || element.parentElement;
+    const notifCard = parent ? parent.querySelector(".header-banner-hero-horizontal-notification-card") : null;
+    if (notifCard) {
+      const notifContent = [];
+      const notifText = notifCard.querySelector(".field--name-field-description, .text-formatted, p");
+      const notifLink = notifCard.querySelector("a");
+      if (notifText) {
+        const p = document.createElement("p");
+        p.textContent = notifText.textContent.trim();
+        notifContent.push(p);
+      }
+      if (notifLink) {
+        const p = document.createElement("p");
+        const a = document.createElement("a");
+        a.setAttribute("href", notifLink.getAttribute("href") || "");
+        a.textContent = notifLink.textContent.trim();
+        p.append(a);
+        notifContent.push(p);
+      }
+      if (notifContent.length > 0) {
+        cells.push(notifContent);
+      }
+      notifCard.remove();
+    }
     const block = WebImporter.Blocks.createBlock(document, {
       name: "hero-homepage",
       cells
@@ -646,7 +670,7 @@ var CustomImportScript = (() => {
       }
     ],
     sections: [
-      { id: "section-1", name: "Hero", selector: ".paragraph--type--header-banner-hero", style: "dark-blue", blocks: ["hero-homepage"], defaultContent: [".header-banner-hero-horizontal-notification-card"] },
+      { id: "section-1", name: "Hero", selector: ".paragraph--type--header-banner-hero", style: "dark-blue", blocks: ["hero-homepage"], defaultContent: [] },
       { id: "section-2", name: "Meet CventIQ", selector: "#cvent-paragraph-compound_media_bar-1568076", style: "blue-purple-gradient", blocks: ["columns-media"], defaultContent: [] },
       { id: "section-3", name: "All-in-one Solution Stats", selector: "#cvent-paragraph-compound_media_bar-1458006", style: null, blocks: ["columns-media"], defaultContent: [] },
       { id: "section-4", name: "Trusted By Logo Bar", selector: "#cvent-paragraph-logo_bar-1542431", style: null, blocks: [], defaultContent: ["#cvent-paragraph-logo_bar-1542431"] },

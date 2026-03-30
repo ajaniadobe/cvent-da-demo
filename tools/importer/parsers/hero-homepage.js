@@ -48,6 +48,32 @@ export default function parse(element, { document }) {
     cells.push(contentCell);
   }
 
+  // Row 3: Notification card (from sibling .hero-bottom-wrapper in parent)
+  const parent = element.closest('.paragraph--type--header-banner-hero') || element.parentElement;
+  const notifCard = parent ? parent.querySelector('.header-banner-hero-horizontal-notification-card') : null;
+  if (notifCard) {
+    const notifContent = [];
+    const notifText = notifCard.querySelector('.field--name-field-description, .text-formatted, p');
+    const notifLink = notifCard.querySelector('a');
+    if (notifText) {
+      const p = document.createElement('p');
+      p.textContent = notifText.textContent.trim();
+      notifContent.push(p);
+    }
+    if (notifLink) {
+      const p = document.createElement('p');
+      const a = document.createElement('a');
+      a.setAttribute('href', notifLink.getAttribute('href') || '');
+      a.textContent = notifLink.textContent.trim();
+      p.append(a);
+      notifContent.push(p);
+    }
+    if (notifContent.length > 0) {
+      cells.push(notifContent);
+    }
+    notifCard.remove();
+  }
+
   const block = WebImporter.Blocks.createBlock(document, {
     name: 'hero-homepage',
     cells,
