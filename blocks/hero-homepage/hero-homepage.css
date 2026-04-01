@@ -278,8 +278,7 @@
   .hero-homepage {
     padding: 80px 64px;
     min-height: 560px;
-    margin: 0 auto;
-    max-width: 1400px;
+    margin: 0 24px;
   }
 
   .hero-homepage > div:first-child {
@@ -293,8 +292,7 @@
   }
 
   .hero-bottom-wrapper {
-    margin: 0 auto;
-    max-width: 1400px;
+    margin: 0 24px;
   }
 
   .hero-curve {

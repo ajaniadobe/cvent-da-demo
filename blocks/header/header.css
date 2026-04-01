@@ -322,7 +322,7 @@ header {
     overflow: initial;
 
     .header-content {
-      max-width: var(--grid-container-width);
+      max-width: calc(100% - 48px);
       margin: 0 auto;
       grid-template: "brand nav actions" 1fr / auto 1fr auto;
       gap: var(--spacing-l);
