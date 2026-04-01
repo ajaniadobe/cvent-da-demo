@@ -332,6 +332,12 @@ a {
     padding: 0 15px;
   }
 
+  /* hero section breaks out of the 1200px constraint */
+  &:has(.hero-homepage) > .block-content {
+    max-width: none;
+    padding: 0;
+  }
+
   /* spacing between consecutive blocks within a section */
   > .block-content > * + * {
     margin-top: 96px;
